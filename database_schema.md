@@ -1,6 +1,6 @@
 # 🗄️ THIẾT KẾ CƠ SỞ DỮ LIỆU MYSQL (DATABASE DATA MODEL)
 
-Tài liệu này chi tiết hóa cấu trúc lưu trữ cơ sở dữ liệu quan hệ **MySQL / MariaDB** cho hệ thống **Helpdesk CNTT & Cơ sở vật chất (TLU)**. Kiến trúc được thiết kế tối ưu theo **Chuẩn hóa 3NF (Third Normal Form)**, đảm bảo tính toàn vẹn dữ liệu, hiệu năng truy vấn cao, hỗ trợ đầy đủ các ràng buộc khóa ngoại (Foreign Keys), chỉ mục (Indexes) và đáp ứng trọn vẹn các yêu cầu nghiệp vụ thực tế.
+Tài liệu này chi tiết hóa cấu trúc lưu trữ cơ sở dữ liệu quan hệ **MySQL / MariaDB** cho hệ thống **Helpdesk CNTT & Cơ sở vật chất (TLU)**. Kiến trúc được thiết kế tối ưu theo **Chuẩn hóa 3NF (Third Normal Form)**, đảm bảo tính toàn vẹn dữ liệu, hiệu năng truy vấn cao, hỗ trợ đầy đủ các ràng buộc khóa ngoại (Foreign Keys), chỉ mục (Indexes), Trigger tự động hóa và đáp ứng trọn vẹn các yêu cầu nghiệp vụ thực tế.
 
 ---
 
@@ -153,8 +153,8 @@ Lưu vết lịch sử thay đổi tiến độ của Ticket. Bảng này bất 
 | `id` | `BIGINT` | `UNSIGNED, AUTO_INCREMENT, Primary Key` | ID log (Khóa chính) |
 | `ticket_id` | `BIGINT` | `UNSIGNED, NOT NULL, Foreign Key` | Thuộc ticket nào (FK -> tickets.id, ON DELETE CASCADE) |
 | `changed_by_user_id` | `BIGINT` | `UNSIGNED, NOT NULL, Foreign Key` | Người bấm chuyển trạng thái (FK -> users.id, ON DELETE RESTRICT) |
-| `old_status` | `VARCHAR(20)` | `NULLABLE` | Trạng thái trước khi chuyển |
-| `new_status` | `VARCHAR(20)` | `NOT NULL` | Trạng thái mới chuyển sang |
+| `old_status` | `ENUM` | `'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REOPENED', NULLABLE` | Trạng thái trước khi chuyển |
+| `new_status` | `ENUM` | `'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REOPENED'` | Trạng thái mới chuyển sang |
 | `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời điểm ghi nhận thao tác |
 
 ### 2.11. Bảng `satisfaction_surveys` — Khảo sát Đánh giá Mức độ Hài lòng
@@ -164,13 +164,15 @@ Bài đánh giá chất lượng phục vụ sau khi Ticket đã hoàn thành x�
 | :--- | :--- | :--- | :--- |
 | `id` | `BIGINT` | `UNSIGNED, AUTO_INCREMENT, Primary Key` | ID bài đánh giá (Khóa chính) |
 | `ticket_id` | `BIGINT` | `UNSIGNED, UNIQUE, NOT NULL, Foreign Key` | Khóa ngoại duy nhất (FK -> tickets.id, ON DELETE CASCADE) |
-| `rating_stars` | `TINYINT` | `NOT NULL, CHECK (rating_stars BETWEEN 1 AND 5)` | Mức điểm chấm: 1 đến 5 sao |
+| `rating_stars` | `TINYINT UNSIGNED` | `NOT NULL, CHECK (rating_stars BETWEEN 1 AND 5)` | Mức điểm chấm: 1 đến 5 sao |
 | `comment` | `TEXT` | `NULLABLE` | Ý kiến nhận xét đóng góp |
 | `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời điểm gửi đánh giá |
 
 ---
 
 ## 3. Câu lệnh SQL Tạo Bảng & Ràng buộc Chi tiết (Complete Production DDL Script)
+
+> 📌 **Yêu cầu hệ thống**: **MySQL 8.0.16+** hoặc **MariaDB 10.2.1+** để các ràng buộc `CHECK CONSTRAINT` hoạt động thực tế.
 
 ```sql
 -- 1. Bảng Phòng ban (departments)
@@ -249,12 +251,13 @@ CREATE TABLE `tickets` (
   CONSTRAINT `fk_tickets_requester` FOREIGN KEY (`requester_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT,
   CONSTRAINT `fk_tickets_assignee` FOREIGN KEY (`current_assignee_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
   
-  -- Performance Indexes
+  -- Performance Single & Composite Indexes
   INDEX `idx_tickets_status` (`status`),
   INDEX `idx_tickets_priority` (`priority`),
   INDEX `idx_tickets_sla_deadline` (`sla_deadline`),
   INDEX `idx_tickets_requester` (`requester_id`),
-  INDEX `idx_tickets_assignee` (`current_assignee_id`)
+  INDEX `idx_tickets_assignee` (`current_assignee_id`),
+  INDEX `idx_tickets_assignee_priority_sla` (`current_assignee_id`, `priority`, `sla_deadline`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Bảng Nội dung Trao đổi Hai chiều (ticket_comments)
@@ -300,8 +303,8 @@ CREATE TABLE `ticket_status_logs` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `ticket_id` BIGINT UNSIGNED NOT NULL,
   `changed_by_user_id` BIGINT UNSIGNED NOT NULL,
-  `old_status` VARCHAR(20) NULL,
-  `new_status` VARCHAR(20) NOT NULL,
+  `old_status` ENUM('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REOPENED') NULL,
+  `new_status` ENUM('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REOPENED') NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_status_logs_ticket` FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_status_logs_user` FOREIGN KEY (`changed_by_user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT,
@@ -312,10 +315,87 @@ CREATE TABLE `ticket_status_logs` (
 CREATE TABLE `satisfaction_surveys` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `ticket_id` BIGINT UNSIGNED NOT NULL UNIQUE,
-  `rating_stars` TINYINT NOT NULL,
+  `rating_stars` TINYINT UNSIGNED NOT NULL,
   `comment` TEXT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_surveys_ticket` FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`) ON DELETE CASCADE,
   CONSTRAINT `chk_rating_stars` CHECK (`rating_stars` >= 1 AND `rating_stars` <= 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+---
+
+## 4. Trigger Tự động hóa & Quy tắc Vận hành CSDL (MySQL Triggers & Automation Logic)
+
+Để đảm bảo tính nhất quán dữ liệu 100% giữa các bảng mà không hoàn toàn phụ thuộc vào code ứng dụng backend, hệ thống triển khai 3 **Database Triggers** tự động sau:
+
+### 4.1. Trigger 1: Tự động đồng bộ KTV phụ trách (`current_assignee_id`)
+Mỗi khi có một bản ghi phân công mới được chèn vào `ticket_assignments`, Trigger sẽ tự động cập nhật cột `current_assignee_id` trong bảng `tickets`.
+
+```sql
+DELIMITER //
+
+CREATE TRIGGER `trg_sync_current_assignee_after_assignment`
+AFTER INSERT ON `ticket_assignments`
+FOR EACH ROW
+BEGIN
+  UPDATE `tickets`
+  SET `current_assignee_id` = NEW.assigned_to_staff_id,
+      `updated_at` = CURRENT_TIMESTAMP
+  WHERE `id` = NEW.ticket_id;
+END //
+
+DELIMITER ;
+```
+
+### 4.2. Trigger 2: Tự động tính mốc thời hạn SLA (`sla_deadline`)
+Khi tạo mới một ticket, nếu `sla_deadline` chưa được truyền vào, Trigger sẽ tự động tra cứu số giờ `sla_hours` từ danh mục `ticket_categories` tương ứng và tính `sla_deadline = created_at + sla_hours`.
+
+```sql
+DELIMITER //
+
+CREATE TRIGGER `trg_tickets_calculate_sla_before_insert`
+BEFORE INSERT ON `tickets`
+FOR EACH ROW
+BEGIN
+  DECLARE category_sla INT;
+  
+  IF NEW.sla_deadline IS NULL THEN
+    SELECT `sla_hours` INTO category_sla 
+    FROM `ticket_categories` 
+    WHERE `id` = NEW.category_id;
+    
+    IF category_sla IS NOT NULL THEN
+      SET NEW.sla_deadline = DATE_ADD(CURRENT_TIMESTAMP, INTERVAL category_sla HOUR);
+    ELSE
+      SET NEW.sla_deadline = DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 24 HOUR);
+    END IF;
+  END IF;
+END //
+
+DELIMITER ;
+```
+
+### 4.3. Trigger 3: Tự động ghi nhận mốc thời gian hoàn thành (`resolved_at` & `closed_at`)
+Khi trạng thái phiếu thay đổi sang `RESOLVED` hoặc `CLOSED`, Trigger tự động cập nhật mốc thời gian hoàn thành làm căn cứ tính KPI đúng hạn SLA.
+
+```sql
+DELIMITER //
+
+CREATE TRIGGER `trg_tickets_update_timestamps_before_update`
+BEFORE UPDATE ON `tickets`
+FOR EACH ROW
+BEGIN
+  -- Tự động lưu thời điểm RESOLVED
+  IF NEW.status = 'RESOLVED' AND OLD.status != 'RESOLVED' THEN
+    SET NEW.resolved_at = CURRENT_TIMESTAMP;
+  END IF;
+  
+  -- Tự động lưu thời điểm CLOSED
+  IF NEW.status = 'CLOSED' AND OLD.status != 'CLOSED' THEN
+    SET NEW.closed_at = CURRENT_TIMESTAMP;
+  END IF;
+END //
+
+DELIMITER ;
 ```
