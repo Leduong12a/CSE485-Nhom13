@@ -327,12 +327,12 @@ CREATE TABLE `satisfaction_surveys` (
 
 ## 4. Trigger Tự động hóa & Quy tắc Vận hành CSDL (MySQL Triggers & Automation Logic)
 
-Để đảm bảo tính nhất quán dữ liệu 100% giữa các bảng mà không hoàn toàn phụ thuộc vào code ứng dụng backend, hệ thống triển khai 3 **Database Triggers** tự động sau:
-
 ### 4.1. Trigger 1: Tự động đồng bộ KTV phụ trách (`current_assignee_id`)
 Mỗi khi có một bản ghi phân công mới được chèn vào `ticket_assignments`, Trigger sẽ tự động cập nhật cột `current_assignee_id` trong bảng `tickets`.
 
 ```sql
+DROP TRIGGER IF EXISTS `trg_sync_current_assignee_after_assignment`;
+
 DELIMITER //
 
 CREATE TRIGGER `trg_sync_current_assignee_after_assignment`
@@ -351,7 +351,11 @@ DELIMITER ;
 ### 4.2. Trigger 2: Tự động tính mốc thời hạn SLA (`sla_deadline`)
 Khi tạo mới một ticket, nếu `sla_deadline` chưa được truyền vào, Trigger sẽ tự động tra cứu số giờ `sla_hours` từ danh mục `ticket_categories` tương ứng và tính `sla_deadline = created_at + sla_hours`.
 
+> 📌 *Lưu ý*: Ràng buộc khóa ngoại `fk_tickets_category` đã đảm bảo `category_id` luôn tồn tại trong `ticket_categories`, nên không cần bắt ngoại lệ `NOT FOUND`.
+
 ```sql
+DROP TRIGGER IF EXISTS `trg_tickets_calculate_sla_before_insert`;
+
 DELIMITER //
 
 CREATE TRIGGER `trg_tickets_calculate_sla_before_insert`
@@ -376,24 +380,97 @@ END //
 DELIMITER ;
 ```
 
-### 4.3. Trigger 3: Tự động ghi nhận mốc thời gian hoàn thành (`resolved_at` & `closed_at`)
-Khi trạng thái phiếu thay đổi sang `RESOLVED` hoặc `CLOSED`, Trigger tự động cập nhật mốc thời gian hoàn thành làm căn cứ tính KPI đúng hạn SLA.
+### 4.3. Trigger 3: Tự động cập nhật / Reset mốc thời gian hoàn thành (`resolved_at` & `closed_at`)
+- Khi chuyển sang `RESOLVED` hoặc `CLOSED`: Tự động ghi nhận mốc thời gian hoàn thành.
+- Khi chuyển sang `REOPENED` (từ `RESOLVED` hoặc `CLOSED` cũ): Tự động **reset `resolved_at = NULL` và `closed_at = NULL`** để tính lại KPI thời gian cho lần xử lý mới.
 
 ```sql
+DROP TRIGGER IF EXISTS `trg_tickets_update_timestamps_before_update`;
+
 DELIMITER //
 
 CREATE TRIGGER `trg_tickets_update_timestamps_before_update`
 BEFORE UPDATE ON `tickets`
 FOR EACH ROW
 BEGIN
-  -- Tự động lưu thời điểm RESOLVED
+  -- 1. Reset mốc thời gian khi ticket được mở lại (REOPENED)
+  IF NEW.status = 'REOPENED' AND OLD.status IN ('RESOLVED', 'CLOSED') THEN
+    SET NEW.resolved_at = NULL;
+    SET NEW.closed_at = NULL;
+  END IF;
+
+  -- 2. Tự động lưu thời điểm RESOLVED
   IF NEW.status = 'RESOLVED' AND OLD.status != 'RESOLVED' THEN
     SET NEW.resolved_at = CURRENT_TIMESTAMP;
   END IF;
-  
-  -- Tự động lưu thời điểm CLOSED
+
+  -- 3. Tự động lưu thời điểm CLOSED
   IF NEW.status = 'CLOSED' AND OLD.status != 'CLOSED' THEN
     SET NEW.closed_at = CURRENT_TIMESTAMP;
+  END IF;
+END //
+
+DELIMITER ;
+```
+
+### 4.4. Chiến lược ghi Nhật ký Trạng thái (`ticket_status_logs`)
+
+Có 2 phương án triển khai ghi log lịch sử chuyển trạng thái ticket:
+
+#### 📌 Phương án 1: Tầng Ứng dụng Laravel 12 Observer / Event (Khuyên dùng trong Dự án hiện tại)
+Do dự án **tlu_helpdesk** xây dựng trên nền **Laravel 12 (PHP 8.2)**, việc ghi log trực tiếp trong `TicketObserver` giúp bắt chính xác ID người dùng đang đăng nhập (`Auth::id()`) một cách tường minh:
+
+```php
+// app/Observers/TicketObserver.php (Laravel 12)
+namespace App\Observers;
+
+use App\Models\Ticket;
+use App\Models\TicketStatusLog;
+use Illuminate\Support\Facades\Auth;
+
+class TicketObserver
+{
+    public function updated(Ticket $ticket): void
+    {
+        if ($ticket->isDirty('status')) {
+            TicketStatusLog::create([
+                'ticket_id'          => $ticket->id,
+                'changed_by_user_id' => Auth::id() ?? $ticket->requester_id,
+                'old_status'         => $ticket->getOriginal('status'),
+                'new_status'         => $ticket->status,
+            ]);
+        }
+    }
+}
+```
+
+#### 📌 Phương án 2: Tự động ghi qua Trigger 4 (Tích hợp MySQL Session Variable)
+Nếu muốn tự động hóa hoàn toàn dưới CSDL, Backend chạy câu lệnh `SET @current_user_id = <user_id>` trước mỗi thao tác UPDATE ticket.
+
+```sql
+DROP TRIGGER IF EXISTS `trg_tickets_log_status_after_update`;
+
+DELIMITER //
+
+CREATE TRIGGER `trg_tickets_log_status_after_update`
+AFTER UPDATE ON `tickets`
+FOR EACH ROW
+BEGIN
+  IF NEW.status != OLD.status THEN
+    INSERT INTO `ticket_status_logs` (
+      `ticket_id`, 
+      `changed_by_user_id`, 
+      `old_status`, 
+      `new_status`,
+      `created_at`
+    )
+    VALUES (
+      NEW.id, 
+      IFNULL(@current_user_id, NEW.requester_id), 
+      OLD.status, 
+      NEW.status,
+      CURRENT_TIMESTAMP
+    );
   END IF;
 END //
 
