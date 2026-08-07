@@ -4,26 +4,138 @@ Tài liệu này chi tiết hóa cấu trúc lưu trữ cơ sở dữ liệu qua
 
 ---
 
-## 1. Sơ đồ Quan hệ Thực thể (ERD Schema Overview)
+## 1. Sơ đồ Quan hệ Thực thể Đầy đủ Thuộc tính & Khóa (ERD Schema Overview)
 
 ```mermaid
 erDiagram
+    departments {
+        bigint id PK
+        string code
+        string name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users {
+        bigint id PK
+        bigint department_id FK
+        string name
+        string email
+        string password
+        enum role
+        boolean is_active
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    staff_profiles {
+        bigint id PK
+        bigint user_id FK
+        string phone
+        string shift
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ticket_categories {
+        bigint id PK
+        string name
+        text description
+        unsigned_int sla_hours
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    staff_specialties {
+        bigint staff_profile_id PK, FK
+        bigint category_id PK, FK
+    }
+
+    tickets {
+        bigint id PK
+        string title
+        text description
+        string location
+        bigint category_id FK
+        bigint requester_id FK
+        bigint current_assignee_id FK
+        enum status
+        enum priority
+        timestamp sla_deadline
+        timestamp resolved_at
+        timestamp closed_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ticket_comments {
+        bigint id PK
+        bigint ticket_id FK
+        bigint user_id FK
+        text content
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ticket_attachments {
+        bigint id PK
+        bigint ticket_id FK
+        bigint comment_id FK
+        string file_path
+        string file_type
+        timestamp created_at
+    }
+
+    ticket_assignments {
+        bigint id PK
+        bigint ticket_id FK
+        bigint assigned_to_staff_id FK
+        bigint assigned_by_user_id FK
+        text note
+        timestamp assigned_at
+    }
+
+    ticket_status_logs {
+        bigint id PK
+        bigint ticket_id FK
+        bigint changed_by_user_id FK
+        enum old_status
+        enum new_status
+        timestamp created_at
+    }
+
+    satisfaction_surveys {
+        bigint id PK
+        bigint ticket_id FK
+        tinyint rating_stars
+        text comment
+        timestamp created_at
+    }
+
+    %% QUAN HỆ GIỮA CÁC BẢNG (RELATIONSHIPS)
     departments ||--o{ users : "thuộc phòng ban"
     users ||--o| staff_profiles : "hồ sơ kỹ thuật viên"
     staff_profiles ||--o{ staff_specialties : "chuyên môn thuộc danh mục"
     ticket_categories ||--o{ staff_specialties : "danh mục chuyên môn"
-    users ||--o{ tickets : "người báo lỗi (requester, RESTRICT)"
-    users ||--o{ tickets : "KTV đang phụ trách (current_assignee)"
-    ticket_categories ||--o{ tickets : "phân loại sự cố & SLA"
-    tickets ||--o{ ticket_attachments : "ảnh minh chứng / tệp gửi chat"
-    ticket_comments ||--o{ ticket_attachments : "tệp đính kèm trong chat"
-    tickets ||--o{ ticket_assignments : "lịch sử phân công staff"
-    users ||--o{ ticket_assignments : "assigned_to / assigned_by"
+
+    ticket_categories ||--o{ tickets : "phân loại sự cố"
+    users ||--o{ tickets : "người báo lỗi (requester)"
+    users ||--o{ tickets : "KTV phụ trách (current_assignee)"
+
     tickets ||--o{ ticket_comments : "trao đổi hai chiều"
     users ||--o{ ticket_comments : "người bình luận"
+
+    tickets ||--o{ ticket_attachments : "file đính kèm ticket"
+    ticket_comments ||--o{ ticket_attachments : "file đính kèm chat"
+
+    tickets ||--o{ ticket_assignments : "lịch sử phân công"
+    users ||--o{ ticket_assignments : "phân công cho / bởi"
+
     tickets ||--o{ ticket_status_logs : "nhật ký đổi trạng thái"
-    users ||--o{ ticket_status_logs : "người chuyển trạng thái"
-    tickets ||--|| satisfaction_surveys : "đánh giá sau đóng ticket"
+    users ||--o{ ticket_status_logs : "người đổi trạng thái"
+
+    tickets ||--o| satisfaction_surveys : "đánh giá sau đóng ticket"
 ```
 
 ---
@@ -167,6 +279,3 @@ Bài đánh giá chất lượng phục vụ sau khi Ticket đã hoàn thành x�
 | `rating_stars` | `TINYINT UNSIGNED` | `NOT NULL, CHECK (rating_stars BETWEEN 1 AND 5)` | Mức điểm chấm: 1 đến 5 sao |
 | `comment` | `TEXT` | `NULLABLE` | Ý kiến nhận xét đóng góp |
 | `created_at` | `TIMESTAMP` | `NOT NULL, DEFAULT CURRENT_TIMESTAMP` | Thời điểm gửi đánh giá |
-
----
-

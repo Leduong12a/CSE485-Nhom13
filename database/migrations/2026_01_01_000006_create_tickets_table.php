@@ -26,7 +26,6 @@ return new class extends Migration
             $table->timestamp('closed_at')->nullable();
             $table->timestamps();
 
-            // Indexes
             $table->index('status');
             $table->index('priority');
             $table->index('sla_deadline');
