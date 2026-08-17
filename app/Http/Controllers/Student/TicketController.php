@@ -141,6 +141,11 @@ class TicketController extends Controller
     {
         abort_if($ticket->requester_id !== Auth::id(), 403);
 
+        if ($ticket->status === 'CLOSED') {
+            return redirect()->back()
+                ->with('error', 'Sự cố này đã đóng, không thể gửi thêm tin nhắn chat.');
+        }
+
         $request->validate([
             'content'     => ['required', 'string', 'max:2000'],
             'attachments' => ['nullable', 'array', 'max:5'],
@@ -178,6 +183,13 @@ class TicketController extends Controller
         abort_if($ticket->requester_id !== Auth::id(), 403);
         abort_unless(in_array($ticket->status, ['RESOLVED', 'CLOSED']), 403, 'Chỉ được mở lại ticket đã xử lý xong.');
 
+        // Rào chắn bảo mật: Chỉ cho phép mở lại trong vòng 2 giờ kể từ mốc đóng/khắc phục
+        $closedTime = $ticket->closed_at ?? $ticket->resolved_at ?? $ticket->updated_at;
+        if ($closedTime && $closedTime->diffInMinutes(now()) > 120) {
+            return redirect()->back()
+                ->with('error', 'Đã quá thời hạn 2 giờ kể từ khi đóng sự cố. Bạn không thể mở lại phiếu này nữa.');
+        }
+
         $request->validate([
             'reason' => ['required', 'string', 'min:10', 'max:500'],
         ], [
@@ -186,7 +198,12 @@ class TicketController extends Controller
         ]);
 
         $oldStatus = $ticket->status;
-        $ticket->update(['status' => 'REOPENED']);
+        $slaHours  = $ticket->category ? ($ticket->category->sla_hours ?? 2) : 2;
+
+        $ticket->update([
+            'status'       => 'REOPENED',
+            'sla_deadline' => now()->addHours($slaHours),
+        ]);
 
         // Ghi comment lý do mở lại
         TicketComment::create([
@@ -213,7 +230,7 @@ class TicketController extends Controller
     public function survey(Request $request, Ticket $ticket)
     {
         abort_if($ticket->requester_id !== Auth::id(), 403);
-        abort_unless($ticket->status === 'RESOLVED', 403, 'Chỉ được đánh giá ticket đã được khắc phục.');
+        abort_unless(in_array($ticket->status, ['RESOLVED', 'CLOSED']), 403, 'Chỉ được đánh giá ticket đã được khắc phục hoặc đã đóng.');
 
         $request->validate([
             'rating_stars' => ['required', 'integer', 'between:1,5'],

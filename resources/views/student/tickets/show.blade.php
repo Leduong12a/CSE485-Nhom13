@@ -74,14 +74,21 @@
         {{-- Thông tin sự cố + ảnh minh chứng --}}
         @include('student.tickets.partials.ticket-info')
 
-        {{-- Card đánh giá 5 sao (chỉ hiện khi RESOLVED và chưa survey) --}}
-        @if ($ticket->status === 'RESOLVED' && ! $ticket->satisfactionSurvey)
+        {{-- Card đánh giá 5 sao (hiện khi RESOLVED hoặc CLOSED và chưa survey) --}}
+        @if (in_array($ticket->status, ['RESOLVED', 'CLOSED']) && ! $ticket->satisfactionSurvey)
             @include('student.tickets.partials.survey-card')
         @endif
 
-        {{-- Nút mở lại sự cố (RESOLVED hoặc CLOSED) --}}
+        {{-- Nút mở lại sự cố (chỉ cho phép mở lại trong vòng 2 giờ kể từ khi đóng/khắc phục) --}}
         @if (in_array($ticket->status, ['RESOLVED', 'CLOSED']))
-            @include('student.tickets.partials.reopen-modal')
+            @php
+                $closedTime = $ticket->closed_at ?? $ticket->resolved_at ?? $ticket->updated_at;
+                $canReopen  = $closedTime ? ($closedTime->diffInMinutes(now()) <= 120) : false;
+            @endphp
+
+            @if ($canReopen)
+                @include('student.tickets.partials.reopen-modal')
+            @endif
         @endif
     </div>
 

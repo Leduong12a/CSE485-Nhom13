@@ -85,81 +85,87 @@
 
     {{-- Input gửi tin nhắn --}}
     <div style="padding: 0.75rem; border-top: 1px solid #f1f5f9; background: white;">
-        <form method="POST" action="{{ route('student.tickets.comments.store', $ticket->id) }}"
-              enctype="multipart/form-data" id="chatForm">
-            @csrf
-
-            <div style="display:flex; flex-direction:column; gap:8px;">
-
-                <textarea name="content" id="chatInput" rows="2"
-                    placeholder="Nhập tin nhắn trao đổi..."
-                    style="
-                        border-radius: 10px;
-                        border: 1.5px solid #e5e7eb;
-                        padding: 0.55rem 0.85rem;
-                        font-size: 0.85rem;
-                        resize: none;
-                        transition: border-color 0.2s;
-                        font-family: 'Inter', sans-serif;
-                    "
-                    onkeydown="if(event.ctrlKey&&event.key==='Enter') document.getElementById('chatForm').submit();"
-                    required></textarea>
-
-                {{-- Preview files đính kèm trong chat --}}
-                <div id="chatFilesPreview" class="d-flex flex-wrap gap-1" style="display:none !important;"></div>
-
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <div class="d-flex gap-1">
-                        {{-- Nút Chụp ảnh trực tiếp từ Camera điện thoại --}}
-                        <label for="chatCamera" style="
-                            display: inline-flex; align-items: center; gap: 5px;
-                            cursor: pointer; font-size: 0.8rem; color: #0d6efd;
-                            padding: 0.35rem 0.7rem; border-radius: 8px;
-                            border: 1.5px solid #bfdbfe; background:#eff6ff;
-                            transition: border-color 0.15s, color 0.15s;
-                        " class="btn-attach" title="Chụp ảnh từ Camera">
-                            <i class="bi bi-camera-fill"></i> Chụp ảnh
-                            <input type="file" id="chatCamera" name="attachments[]"
-                                   accept="image/*" capture="environment"
-                                   style="display:none;"
-                                   onchange="previewChatFiles(this)">
-                        </label>
-
-                        {{-- Nút đính kèm tệp từ thư viện --}}
-                        <label for="chatAttachments" style="
-                            display: inline-flex; align-items: center; gap: 5px;
-                            cursor: pointer; font-size: 0.8rem; color: #64748b;
-                            padding: 0.35rem 0.7rem; border-radius: 8px;
-                            border: 1.5px solid #e5e7eb;
-                            transition: border-color 0.15s, color 0.15s;
-                        " class="btn-attach" title="Chọn từ Thư viện">
-                            <i class="bi bi-images"></i> Thư viện
-                            <input type="file" id="chatAttachments" name="attachments[]"
-                                   accept=".jpg,.jpeg,.png,.pdf" multiple
-                                   style="display:none;"
-                                   onchange="previewChatFiles(this)">
-                        </label>
-                    </div>
-
-                    {{-- Nút gửi --}}
-                    <button type="submit" id="btnSend"
-                        style="
-                            background: var(--tlu-primary);
-                            border: none;
-                            border-radius: 9px;
-                            padding: 0.4rem 1rem;
-                            color: white;
-                            font-size: 0.83rem;
-                            font-weight: 600;
-                            display: flex; align-items: center; gap: 6px;
-                            transition: background 0.15s;
-                        ">
-                        <i class="bi bi-send-fill"></i> Gửi
-                        <span style="font-size:0.67rem; opacity:0.7;">(Ctrl+↵)</span>
-                    </button>
-                </div>
+        @if ($ticket->status === 'CLOSED')
+            <div class="p-3 text-center rounded-3 bg-light text-muted" style="font-size:0.82rem; border: 1px dashed #cbd5e1;">
+                <i class="bi bi-lock-fill me-1 text-secondary"></i> Sự cố đã đóng hoàn toàn (Khung chat đã khóa).
             </div>
-        </form>
+        @else
+            <form method="POST" action="{{ route('student.tickets.comments.store', $ticket->id) }}"
+                  enctype="multipart/form-data" id="chatForm">
+                @csrf
+
+                <div style="display:flex; flex-direction:column; gap:8px;">
+
+                    <textarea name="content" id="chatInput" rows="2"
+                        placeholder="Nhập tin nhắn trao đổi..."
+                        style="
+                            border-radius: 10px;
+                            border: 1.5px solid #e5e7eb;
+                            padding: 0.55rem 0.85rem;
+                            font-size: 0.85rem;
+                            resize: none;
+                            transition: border-color 0.2s;
+                            font-family: 'Inter', sans-serif;
+                        "
+                        onkeydown="if(event.ctrlKey&&event.key==='Enter') document.getElementById('chatForm').submit();"
+                        required></textarea>
+
+                    {{-- Preview files đính kèm trong chat --}}
+                    <div id="chatFilesPreview" class="d-flex flex-wrap gap-1" style="display:none !important;"></div>
+
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex gap-1">
+                            {{-- Nút Chụp ảnh trực tiếp từ Camera điện thoại --}}
+                            <label for="chatCamera" style="
+                                display: inline-flex; align-items: center; gap: 5px;
+                                cursor: pointer; font-size: 0.8rem; color: #0d6efd;
+                                padding: 0.35rem 0.7rem; border-radius: 8px;
+                                border: 1.5px solid #bfdbfe; background:#eff6ff;
+                                transition: border-color 0.15s, color 0.15s;
+                            " class="btn-attach" title="Chụp ảnh từ Camera">
+                                <i class="bi bi-camera-fill"></i> Chụp ảnh
+                                <input type="file" id="chatCamera" name="attachments[]"
+                                       accept="image/*" capture="environment"
+                                       style="display:none;"
+                                       onchange="previewChatFiles(this)">
+                            </label>
+
+                            {{-- Nút đính kèm tệp từ thư viện --}}
+                            <label for="chatAttachments" style="
+                                display: inline-flex; align-items: center; gap: 5px;
+                                cursor: pointer; font-size: 0.8rem; color: #64748b;
+                                padding: 0.35rem 0.7rem; border-radius: 8px;
+                                border: 1.5px solid #e5e7eb;
+                                transition: border-color 0.15s, color 0.15s;
+                            " class="btn-attach" title="Chọn từ Thư viện">
+                                <i class="bi bi-images"></i> Thư viện
+                                <input type="file" id="chatAttachments" name="attachments[]"
+                                       accept=".jpg,.jpeg,.png,.pdf" multiple
+                                       style="display:none;"
+                                       onchange="previewChatFiles(this)">
+                            </label>
+                        </div>
+
+                        {{-- Nút gửi --}}
+                        <button type="submit" id="btnSend"
+                            style="
+                                background: var(--tlu-primary);
+                                border: none;
+                                border-radius: 9px;
+                                padding: 0.4rem 1rem;
+                                color: white;
+                                font-size: 0.83rem;
+                                font-weight: 600;
+                                display: flex; align-items: center; gap: 6px;
+                                transition: background 0.15s;
+                            ">
+                            <i class="bi bi-send-fill"></i> Gửi
+                            <span style="font-size:0.67rem; opacity:0.7;">(Ctrl+↵)</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        @endif
     </div>
 </div>
 

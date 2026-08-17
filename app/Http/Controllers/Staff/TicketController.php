@@ -112,6 +112,11 @@ class TicketController extends Controller
      */
     public function addComment(Request $request, Ticket $ticket)
     {
+        if ($ticket->status === 'CLOSED') {
+            return redirect()->back()
+                ->with('error', 'Sự cố này đã đóng, không thể gửi thêm tin nhắn chat.');
+        }
+
         $request->validate([
             'content'       => ['required', 'string', 'max:1000'],
             'attachments.*' => ['nullable', 'file', 'max:5120', 'mimes:jpg,jpeg,png,pdf'],

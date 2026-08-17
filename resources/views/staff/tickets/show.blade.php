@@ -207,34 +207,40 @@
 
             {{-- Input Chat --}}
             <div class="p-2 border-top bg-white">
-                <form method="POST" action="{{ route('staff.tickets.comments.store', $ticket->id) }}" enctype="multipart/form-data" id="staffChatForm">
-                    @csrf
-                    <div class="d-flex flex-column gap-2">
-                        <textarea name="content" id="staffChatContent" rows="2" class="form-control rounded-3" placeholder="Nhập tin nhắn hướng dẫn/trao đổi..." style="font-size:0.85rem; resize:none;" required></textarea>
-
-                        {{-- Preview tệp đính kèm đã chọn --}}
-                        <div id="staffChatPreview" class="d-flex flex-wrap gap-1 my-1"></div>
-
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div class="d-flex gap-1">
-                                {{-- Nút Chụp ảnh thông minh --}}
-                                <button type="button" onclick="startStaffWebcam()" class="btn btn-sm btn-outline-primary rounded-2 py-1 px-2 fw-bold" style="font-size:0.78rem;">
-                                    <i class="bi bi-camera-fill me-1"></i> Chụp ảnh
-                                </button>
-                                <input type="file" id="staffCameraInput" name="attachments[]" accept="image/*" capture="environment" class="d-none" onchange="handleStaffFileSelect(this)">
-
-                                {{-- Nút Đính kèm tệp từ máy --}}
-                                <label for="staffFileInput" class="btn btn-sm btn-outline-secondary rounded-2 py-1 px-2 mb-0" style="font-size:0.78rem; cursor:pointer;">
-                                    <i class="bi bi-paperclip me-1"></i> Đính kèm
-                                    <input type="file" id="staffFileInput" name="attachments[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="d-none" onchange="handleStaffFileSelect(this)">
-                                </label>
-                            </div>
-                            <button type="submit" class="btn btn-sm btn-primary fw-bold rounded-2 px-3" style="font-size:0.83rem;">
-                                <i class="bi bi-send-fill me-1"></i> Gửi tin nhắn
-                            </button>
-                        </div>
+                @if ($ticket->status === 'CLOSED')
+                    <div class="p-3 text-center rounded-3 bg-light text-muted" style="font-size:0.82rem; border: 1px dashed #cbd5e1;">
+                        <i class="bi bi-lock-fill me-1 text-secondary"></i> Ticket đã đóng hoàn toàn — Khung chat đã khóa.
                     </div>
-                </form>
+                @else
+                    <form method="POST" action="{{ route('staff.tickets.comments.store', $ticket->id) }}" enctype="multipart/form-data" id="staffChatForm">
+                        @csrf
+                        <div class="d-flex flex-column gap-2">
+                            <textarea name="content" id="staffChatContent" rows="2" class="form-control rounded-3" placeholder="Nhập tin nhắn hướng dẫn/trao đổi..." style="font-size:0.85rem; resize:none;" required></textarea>
+
+                            {{-- Preview tệp đính kèm đã chọn --}}
+                            <div id="staffChatPreview" class="d-flex flex-wrap gap-1 my-1"></div>
+
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="d-flex gap-1">
+                                    {{-- Nút Chụp ảnh thông minh --}}
+                                    <button type="button" onclick="startStaffWebcam()" class="btn btn-sm btn-outline-primary rounded-2 py-1 px-2 fw-bold" style="font-size:0.78rem;">
+                                        <i class="bi bi-camera-fill me-1"></i> Chụp ảnh
+                                    </button>
+                                    <input type="file" id="staffCameraInput" name="attachments[]" accept="image/*" capture="environment" class="d-none" onchange="handleStaffFileSelect(this)">
+
+                                    {{-- Nút Đính kèm tệp từ máy --}}
+                                    <label for="staffFileInput" class="btn btn-sm btn-outline-secondary rounded-2 py-1 px-2 mb-0" style="font-size:0.78rem; cursor:pointer;">
+                                        <i class="bi bi-paperclip me-1"></i> Đính kèm
+                                        <input type="file" id="staffFileInput" name="attachments[]" accept=".jpg,.jpeg,.png,.pdf" multiple class="d-none" onchange="handleStaffFileSelect(this)">
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary fw-bold rounded-2 px-3" style="font-size:0.83rem;">
+                                    <i class="bi bi-send-fill me-1"></i> Gửi tin nhắn
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                @endif
             </div>
         </div>
     </div>
