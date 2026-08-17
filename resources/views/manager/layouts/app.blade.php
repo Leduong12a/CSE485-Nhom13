@@ -269,6 +269,10 @@
                 <i class="bi bi-exclamation-octagon-fill text-danger"></i>
                 <span>Báo cáo Vi phạm SLA</span>
             </a>
+            <a href="{{ route('manager.profile.index') }}" class="sidebar-item {{ request()->routeIs('manager.profile.*') ? 'active' : '' }}">
+                <i class="bi bi-person-badge-fill text-primary"></i>
+                <span>Hồ sơ Quản trị viên</span>
+            </a>
         </nav>
 
         <div class="p-3 border-top border-secondary border-opacity-10 text-center" style="font-size:0.75rem; color:#64748b;">
@@ -306,6 +310,11 @@
                                 <div class="fw-bold" style="font-size:0.85rem;">{{ Auth::user()->name }}</div>
                                 <div class="text-muted" style="font-size:0.75rem;">{{ Auth::user()->email }}</div>
                             </div>
+                        </li>
+                        <li>
+                            <a href="{{ route('manager.profile.index') }}" class="dropdown-item py-2" style="font-size:0.85rem;">
+                                <i class="bi bi-person me-2"></i> Hồ sơ Quản trị viên
+                            </a>
                         </li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">

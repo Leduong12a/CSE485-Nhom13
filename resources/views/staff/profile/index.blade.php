@@ -18,29 +18,25 @@
         position: relative;
     }
 
-    .stf-avatar-wrapper {
+    .stf-avatar-container {
+        padding: 0 1.5rem 1.5rem;
         position: relative;
-        margin-top: -50px;
-        padding-left: 1.5rem;
-        display: flex;
-        align-items: flex-end;
-        gap: 1.25rem;
-        margin-bottom: 1rem;
     }
 
     .stf-avatar {
-        width: 90px;
-        height: 90px;
+        width: 84px;
+        height: 84px;
         background: white;
         border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.4rem;
+        font-size: 2.2rem;
         font-weight: 700;
         color: var(--stf-primary);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         border: 4px solid white;
+        flex-shrink: 0;
     }
 
     .stat-box {
@@ -79,21 +75,24 @@
 {{-- Profile Card --}}
 <div class="stf-profile-card">
     <div class="stf-header-bg"></div>
-    <div class="stf-avatar-wrapper">
-        <div class="stf-avatar">
-            {{ strtoupper(substr($user->name, 0, 1)) }}
-        </div>
-        <div>
-            <h2 class="h4 fw-bold text-dark mb-1">{{ $user->name }}</h2>
-            <p class="text-muted mb-0" style="font-size:0.85rem;">
-                <i class="bi bi-envelope me-1"></i>{{ $user->email }} ·
-                <span class="badge bg-success-subtle text-success border border-success-subtle">Cán bộ Kỹ thuật</span>
-            </p>
-        </div>
-    </div>
 
-    <div class="px-4 pb-4">
-        <div class="row g-3 pt-2 border-top">
+    <div class="stf-avatar-container">
+        {{-- Avatar & Text Container --}}
+        <div class="d-flex align-items-start gap-3 mb-3" style="margin-top: -42px;">
+            <div class="stf-avatar">
+                {{ strtoupper(substr($user->name, 0, 1)) }}
+            </div>
+            <div style="padding-top: 48px;">
+                <h2 class="h4 fw-bold text-dark mb-1">{{ $user->name }}</h2>
+                <p class="text-muted mb-0" style="font-size:0.85rem;">
+                    <i class="bi bi-envelope me-1"></i>{{ $user->email }} ·
+                    <span class="badge bg-success-subtle text-success border border-success-subtle ms-1">Cán bộ Kỹ thuật</span>
+                </p>
+            </div>
+        </div>
+
+        {{-- Statistics Row --}}
+        <div class="row g-3 pt-3 border-top">
             <div class="col-sm-4">
                 <div class="stat-box">
                     <div class="num text-primary">{{ $totalAssigned }}</div>

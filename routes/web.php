@@ -113,6 +113,12 @@ Route::middleware(['auth', 'role:MANAGER'])
         Route::get('/dashboard', [ManagerDashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Hồ sơ Quản trị viên
+        Route::get('/profile', [\App\Http\Controllers\Manager\ProfileController::class, 'index'])
+            ->name('profile.index');
+        Route::post('/profile', [\App\Http\Controllers\Manager\ProfileController::class, 'update'])
+            ->name('profile.update');
+
         // UC10, UC12: Quản lý Ticket & Phân công KTV
         Route::get('/tickets', [ManagerTicketController::class, 'index'])
             ->name('tickets.index');
