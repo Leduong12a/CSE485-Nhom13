@@ -376,6 +376,19 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tự động ẩn thông báo Alert sau 4 giây (4000ms)
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.flash-success, .flash-error, .alert-dismissible');
+                alerts.forEach(function (alertEl) {
+                    alertEl.style.transition = 'opacity 0.5s ease';
+                    alertEl.style.opacity = '0';
+                    setTimeout(() => alertEl.remove(), 500);
+                });
+            }, 4000);
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

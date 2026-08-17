@@ -132,9 +132,26 @@
                             <div class="position-absolute" style="left:-25px; top:2px; width:12px; height:12px; border-radius:50%; background:#10b981;"></div>
                             <div style="font-size:0.85rem; color:#1e293b;">
                                 Đổi trạng thái:
-                                <span class="badge bg-light text-dark border me-1">{{ $log->old_status ?: 'MỚI' }}</span>
+                                <span class="badge bg-light text-dark border me-1">
+                                    @switch($log->old_status)
+                                        @case('OPEN')        Mới gửi @break
+                                        @case('IN_PROGRESS') Đang xử lý @break
+                                        @case('RESOLVED')    Đã khắc phục @break
+                                        @case('CLOSED')      Đã đóng @break
+                                        @case('REOPENED')    Mở lại @break
+                                        @default             Khởi tạo ban đầu
+                                    @endswitch
+                                </span>
                                 <i class="bi bi-arrow-right text-muted"></i>
-                                <span class="badge badge-status badge-{{ $log->new_status }} ms-1">{{ $log->new_status }}</span>
+                                <span class="badge badge-status badge-{{ $log->new_status }} ms-1">
+                                    @switch($log->new_status)
+                                        @case('OPEN')        <i class="bi bi-record-circle-fill text-info me-1"></i> Mới gửi (Chờ xử lý) @break
+                                        @case('IN_PROGRESS') <i class="bi bi-clock-history text-warning me-1"></i> Đang xử lý @break
+                                        @case('RESOLVED')    <i class="bi bi-check-circle-fill text-success me-1"></i> Đã khắc phục @break
+                                        @case('CLOSED')      <i class="bi bi-lock-fill text-secondary me-1"></i> Đã đóng @break
+                                        @case('REOPENED')    <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Mở lại @break
+                                    @endswitch
+                                </span>
                             </div>
                             <small class="text-muted" style="font-size:0.75rem;">
                                 Thực hiện bởi {{ $log->changedBy->name }} · {{ $log->created_at->format('H:i d/m/Y') }}

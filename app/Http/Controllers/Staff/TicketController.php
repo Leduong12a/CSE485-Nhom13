@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
-use App\Models\CommentAttachment;
 use App\Models\Ticket;
 use App\Models\TicketAssignment;
+use App\Models\TicketAttachment;
+use App\Models\TicketComment;
 use App\Models\TicketStatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +31,7 @@ class TicketController extends Controller
         ]);
 
         // Lấy ghi chú phân công mới nhất từ Manager (nếu có)
-        $latestAssignment = $ticket->assignments()->latest()->first();
+        $latestAssignment = $ticket->assignments()->latest('assigned_at')->first();
 
         return view('staff.tickets.show', compact('ticket', 'latestAssignment'));
     }
@@ -43,49 +43,39 @@ class TicketController extends Controller
     {
         $user = Auth::user();
 
-        $oldStatus = $ticket->status;
+        // Gán KTV phụ trách
         $ticket->current_assignee_id = $user->id;
-        $ticket->status = 'IN_PROGRESS';
+        if ($ticket->status === 'OPEN') {
+            $ticket->status = 'IN_PROGRESS';
+        }
         $ticket->save();
 
-        // Ghi lại Lịch sử Phân công
-        TicketAssignment::create([
-            'ticket_id'            => $ticket->id,
-            'assigned_to_staff_id' => $user->id,
-            'assigned_by_user_id'  => $user->id,
-            'note'                 => 'Kỹ thuật viên chủ động nhận xử lý từ Hàng chờ Nhóm.',
-            'assigned_at'          => now(),
-        ]);
-
-        // Ghi log chuyển trạng thái
+        // Ghi log nhật ký
         TicketStatusLog::create([
             'ticket_id'          => $ticket->id,
             'changed_by_user_id' => $user->id,
-            'old_status'         => $oldStatus,
-            'new_status'         => 'IN_PROGRESS',
+            'old_status'         => 'OPEN',
+            'new_status'         => $ticket->status,
         ]);
 
-        return redirect()->route('staff.tickets.show', $ticket->id)
-            ->with('success', 'Bạn đã tự nhận xử lý ticket thành công!');
+        return redirect()->back()
+            ->with('success', 'Bạn đã tự nhận xử lý thành công ticket này.');
     }
 
     /**
-     * UC07, UC08: Cập nhật Trạng thái Ticket 1-Click ([▶ Bắt đầu], [✔ Đã khắc phục], [🔒 Đóng])
+     * Chuyển trạng thái Ticket (1-Click Action Header)
      */
     public function updateStatus(Request $request, Ticket $ticket)
     {
-        $validated = $request->validate([
+        $request->validate([
             'status' => ['required', 'in:IN_PROGRESS,RESOLVED,CLOSED'],
         ]);
 
-        $user = Auth::user();
         $oldStatus = $ticket->status;
-        $newStatus = $validated['status'];
+        $newStatus = $request->status;
+        $user      = Auth::user();
 
-        if ($oldStatus === $newStatus) {
-            return redirect()->back();
-        }
-
+        // Cập nhật trạng thái
         $ticket->status = $newStatus;
 
         // Cập nhật mốc thời gian hoàn thành
@@ -132,7 +122,7 @@ class TicketController extends Controller
         $user = Auth::user();
 
         // Tạo Comment
-        $comment = Comment::create([
+        $comment = TicketComment::create([
             'ticket_id'   => $ticket->id,
             'user_id'     => $user->id,
             'content'     => $request->content,

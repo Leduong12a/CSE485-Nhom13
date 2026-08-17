@@ -51,13 +51,16 @@ class WorkdeskController extends Controller
             }])
             ->get();
 
+        $otherStaffs = $staffMembers;
+
         return view('staff.workdesk.index', compact(
             'assignedTickets',
             'groupQueueTickets',
             'activeTab',
             'assignedCount',
             'queueCount',
-            'staffMembers'
+            'staffMembers',
+            'otherStaffs'
         ));
     }
 

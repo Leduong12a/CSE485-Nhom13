@@ -1,40 +1,94 @@
 @extends('staff.layouts.app')
 
-@section('title', 'Workdesk Dạng Bảng')
+@section('title', 'Workdesk - Bàn làm việc KTV')
 
 @push('styles')
 <style>
+    .kpi-mini-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.2rem 1.35rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kpi-mini-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+    }
+
+    .kpi-mini-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .kpi-mini-val {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+
+    .kpi-mini-lbl {
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+
     .workdesk-nav-tabs .nav-link {
         border: none;
-        border-bottom: 2px solid transparent;
         color: #64748b;
         font-weight: 600;
         font-size: 0.9rem;
-        padding: 0.75rem 1.25rem;
-        background: transparent;
+        padding: 0.85rem 1.25rem;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+        border-radius: 0;
     }
 
-    .workdesk-nav-tabs .nav-link:hover { color: #10b981; }
+    .workdesk-nav-tabs .nav-link:hover {
+        color: var(--stf-primary);
+        background: transparent;
+    }
 
     .workdesk-nav-tabs .nav-link.active {
-        color: #10b981;
-        border-bottom-color: #10b981;
+        color: var(--stf-primary);
+        border-bottom-color: var(--stf-primary);
         background: transparent;
-    }
-
-    .sla-badge-bar {
-        font-size: 0.75rem;
         font-weight: 700;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
     }
 
-    .sla-green  { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-    .sla-yellow { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
-    .sla-red    { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .table-workdesk tbody tr {
+        transition: background 0.15s;
+    }
+
+    .table-workdesk tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .staff-select-card:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1 !important;
+    }
+
+    .staff-select-card:has(input:checked) {
+        background-color: #eff6ff !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 0 1px #0d6efd;
+    }
 </style>
 @endpush
 
@@ -43,30 +97,67 @@
 {{-- Page Header --}}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 fw-bold text-slate-800 mb-0">Bàn làm việc Kỹ thuật (Workdesk)</h1>
-        <p class="text-muted mb-0" style="font-size:0.85rem;">Danh sách công việc phân công &amp; Hàng chờ tiếp nhận xử lý sự cố</p>
+        <h1 class="h3 fw-bold text-dark mb-0">Bàn làm việc Kỹ thuật viên</h1>
+        <p class="text-muted mb-0" style="font-size:0.85rem;">Quản lý danh sách sự cố được giao &amp; Hàng chờ tiếp nhận chung toàn bộ hệ thống</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('staff.workdesk.kanban') }}" class="btn btn-outline-secondary rounded-3" style="font-size:0.85rem;">
-            <i class="bi bi-kanban me-1"></i> Chuyển sang Kanban Board
+        <a href="{{ route('staff.workdesk.kanban') }}" class="btn btn-outline-primary rounded-pill px-3 fw-bold" style="font-size:0.85rem;">
+            <i class="bi bi-kanban-fill me-1"></i> Chuyển sang Kanban Board
         </a>
     </div>
 </div>
 
+{{-- ── TOP 3 MINI KPI CARDS ── --}}
+<div class="row g-3 mb-4">
+    <div class="col-sm-4">
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-icon" style="background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);">
+                <i class="bi bi-person-workspace"></i>
+            </div>
+            <div>
+                <div class="kpi-mini-val">{{ number_format($assignedCount) }}</div>
+                <div class="kpi-mini-lbl">Ticket được giao cho tôi</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <i class="bi bi-inboxes-fill"></i>
+            </div>
+            <div>
+                <div class="kpi-mini-val text-warning">{{ number_format($queueCount) }}</div>
+                <div class="kpi-mini-lbl">Hàng chờ tiếp nhận chung</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div>
+                <div class="kpi-mini-val text-success">Active</div>
+                <div class="kpi-mini-lbl">Trạng thái ca trực Sẵn sàng</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Nav Tabs --}}
-<div class="card overflow-hidden">
+<div class="card overflow-hidden border-0 shadow-sm" style="border-radius:16px;">
     <div class="card-header bg-white border-bottom-0 pb-0">
         <ul class="nav nav-tabs workdesk-nav-tabs card-header-tabs">
             <li class="nav-item">
                 <a class="nav-link {{ $activeTab === 'assigned' ? 'active' : '' }}" href="{{ route('staff.workdesk.index', ['tab' => 'assigned']) }}">
                     <i class="bi bi-person-check-fill me-1"></i> Ticket được giao cho tôi
-                    <span class="badge bg-success ms-1">{{ $assignedCount }}</span>
+                    <span class="badge bg-primary rounded-pill ms-1.5 px-2 py-0.5">{{ $assignedCount }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ $activeTab === 'queue' ? 'active' : '' }}" href="{{ route('staff.workdesk.index', ['tab' => 'queue']) }}">
-                    <i class="bi bi-inboxes-fill me-1"></i> Hàng chờ Nhóm Chuyên môn
-                    <span class="badge bg-warning text-dark ms-1">{{ $queueCount }}</span>
+                    <i class="bi bi-inboxes-fill me-1"></i> Hàng chờ chung
+                    <span class="badge bg-warning text-dark rounded-pill ms-1.5 px-2 py-0.5">{{ $queueCount }}</span>
                 </a>
             </li>
         </ul>
@@ -77,7 +168,7 @@
         {{-- ── TAB 1: TICKET ĐƯỢC GIAO CHO TÔI ── --}}
         @if ($activeTab === 'assigned')
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="font-size:0.875rem;">
+                <table class="table table-hover align-middle mb-0 table-workdesk" style="font-size:0.875rem;">
                     <thead class="table-light text-uppercase text-secondary" style="font-size:0.72rem;">
                         <tr>
                             <th>Mã</th>
@@ -93,26 +184,24 @@
                     <tbody>
                         @forelse ($assignedTickets as $t)
                         @php
-                            $now = now();
-                            $deadline = $t->sla_deadline;
-                            $isOverdue = $deadline && $now->greaterThan($deadline) && !in_array($t->status, ['RESOLVED', 'CLOSED']);
+                            $isOverdue = $t->sla_deadline && now()->greaterThan($t->sla_deadline) && !in_array($t->status, ['RESOLVED','CLOSED']);
+                            $diff = $t->sla_deadline ? now()->diffForHumans($t->sla_deadline, ['parts' => 2, 'syntax' => \Carbon\CarbonInterface::DIFF_RELATIVE_TO_NOW]) : null;
 
-                            if ($deadline && !$isOverdue) {
-                                $diffHours = $now->diffInHours($deadline);
-                                $diffMins = $now->diffInMinutes($deadline) % 60;
-                                $slaText = "Còn {$diffHours}h {$diffMins}p";
-                                $slaClass = $diffHours < 2 ? 'sla-yellow' : 'sla-green';
-                            } elseif ($isOverdue) {
-                                $diffMins = $now->diffInMinutes($deadline);
-                                $diffHours = floor($diffMins / 60);
-                                $slaText = "Quá hạn {$diffHours}h " . ($diffMins % 60) . "p";
-                                $slaClass = 'sla-red sla-overdue-flash';
+                            if ($isOverdue) {
+                                $slaClass = 'sla-danger';
+                                $slaText  = 'Quá hạn ' . Str::after($diff, 'sau ');
+                            } elseif ($t->status === 'RESOLVED' || $t->status === 'CLOSED') {
+                                $slaClass = 'sla-ok';
+                                $slaText  = 'Đã hoàn thành';
+                            } elseif ($t->sla_deadline) {
+                                $slaClass = 'sla-warning';
+                                $slaText  = 'Còn ' . Str::before($diff, ' nữa');
                             } else {
-                                $slaText = '—';
-                                $slaClass = 'sla-green';
+                                $slaClass = 'sla-ok';
+                                $slaText  = '—';
                             }
                         @endphp
-                        <tr class="{{ $isOverdue ? 'table-danger' : '' }}">
+                        <tr>
                             <td class="font-monospace text-muted fw-bold">#{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}</td>
                             <td style="max-width:240px;">
                                 <a href="{{ route('staff.tickets.show', $t->id) }}" class="fw-bold text-dark text-decoration-none">
@@ -120,7 +209,7 @@
                                 </a>
                             </td>
                             <td>
-                                <div class="fw-medium">{{ $t->requester->name }}</div>
+                                <div class="fw-medium text-dark">{{ $t->requester->name }}</div>
                                 <small class="text-muted" style="font-size:0.72rem;">{{ $t->requester->department?->name ?? 'Sinh viên' }}</small>
                             </td>
                             <td><span class="badge bg-light text-dark border">{{ $t->category?->name ?? '—' }}</span></td>
@@ -161,7 +250,7 @@
                             <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-check-circle display-4 text-success d-block mb-2"></i>
                                 <h5>Hiện tại bạn không có ticket nào cần xử lý.</h5>
-                                <p class="mb-0" style="font-size:0.85rem;">Hãy sang tab "Hàng chờ Nhóm Chuyên môn" để tự nhận thêm việc nhé!</p>
+                                <p class="mb-0" style="font-size:0.85rem;">Hãy sang tab "Hàng chờ chung" để tự nhận thêm việc nhé!</p>
                             </td>
                         </tr>
                         @endforelse
@@ -176,10 +265,10 @@
                 </div>
             @endif
 
-        {{-- ── TAB 2: HÀNG CHỜ NHÓM CHUYÊN MÔN ── --}}
+        {{-- ── TAB 2: HÀNG CHỜ CHUNG ── --}}
         @else
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="font-size:0.875rem;">
+                <table class="table table-hover align-middle mb-0 table-workdesk" style="font-size:0.875rem;">
                     <thead class="table-light text-uppercase text-secondary" style="font-size:0.72rem;">
                         <tr>
                             <th>Mã</th>
@@ -205,7 +294,7 @@
                                 </a>
                             </td>
                             <td>
-                                <div class="fw-medium">{{ $t->requester->name }}</div>
+                                <div class="fw-medium text-dark">{{ $t->requester->name }}</div>
                                 <small class="text-muted" style="font-size:0.72rem;">{{ $t->requester->department?->name ?? 'Sinh viên' }}</small>
                             </td>
                             <td><span class="badge bg-light text-dark border">{{ $t->category?->name ?? '—' }}</span></td>
@@ -234,7 +323,7 @@
                                     </form>
                                     <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 fw-bold" style="font-size:0.78rem;"
                                             onclick="openStaffAssignModal({{ $t->id }}, '{{ addslashes($t->title) }}')">
-                                        <i class="bi bi-people-fill me-1"></i> Giao KTV
+                                        <i class="bi bi-person-gear me-1"></i> Phân công
                                     </button>
                                 </div>
                             </td>
@@ -242,8 +331,8 @@
                         @empty
                         <tr>
                             <td colspan="8" class="text-center py-5 text-muted">
-                                <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
-                                <h5>Hàng chờ nhóm hiện tại không có sự cố nào mới.</h5>
+                                <i class="bi bi-check-circle display-4 text-success d-block mb-2"></i>
+                                <h5>Hàng chờ chung hiện tại không có sự cố nào.</h5>
                             </td>
                         </tr>
                         @endforelse
@@ -262,48 +351,54 @@
     </div>
 </div>
 
-{{-- MODAL PHÂN CÔNG NỘI BỘ NHÓM KTV --}}
+{{-- Modal Phân công Nội bộ KTV --}}
 <div class="modal fade" id="staffAssignModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:16px; border:none; box-shadow:0 20px 60px rgba(0,0,0,0.15);">
-            <div class="modal-header border-0 pb-0 px-4 pt-4">
-                <div>
-                    <h5 class="modal-title fw-bold" style="color:#1e293b;"><i class="bi bi-people-fill text-success me-2"></i>Phân công / Chuyển giao KTV trong Nhóm</h5>
-                    <p style="font-size:0.8rem; color:#94a3b8; margin:4px 0 0;" id="staffAssignModalTicketTitle">Chọn KTV tiếp nhận công việc</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="" id="staffAssignForm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
+            <form method="POST" id="staffAssignForm">
                 @csrf
-                <div class="modal-body px-4 py-3">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title h6 fw-bold mb-0">
+                        <i class="bi bi-person-gear me-2"></i>Phân công / Chuyển giao KTV
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted mb-3" style="font-size:0.85rem;" id="assignModalTicketTitle"></p>
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="font-size:0.85rem;">Chọn Kỹ thuật viên tiếp nhận <span class="text-danger">*</span></label>
-                        <div class="d-flex flex-column gap-2" style="max-height: 240px; overflow-y: auto;">
-                            @foreach ($staffMembers as $stf)
-                                @php $activeCnt = $stf->assignedTickets?->count() ?? 0; @endphp
-                                <label class="p-2.5 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer" style="background:#f8fafc; font-size:0.85rem;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="radio" name="staff_id" value="{{ $stf->id }}" required style="transform:scale(1.1);">
+                        <label class="form-label fw-bold" style="font-size:0.85rem;">
+                            Chọn Kỹ thuật viên phụ trách <span class="text-danger">*</span>
+                        </label>
+                        <div class="staff-select-list d-flex flex-column gap-2" style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                            @foreach ($otherStaffs as $s)
+                                <label class="staff-select-card border rounded-3 p-2.5 d-flex align-items-center justify-content-between" style="cursor:pointer; transition:all 0.15s;">
+                                    <div class="d-flex align-items-center gap-2.5">
+                                        <input type="radio" name="staff_id" value="{{ $s->id }}" class="form-check-input mt-0 fs-5" required>
+                                        <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #0d6efd 0%, #0284c7 100%); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem; flex-shrink:0;">
+                                            {{ strtoupper(substr($s->name, 0, 1)) }}
+                                        </div>
                                         <div>
-                                            <div class="fw-bold" style="color:#1e293b;">{{ $stf->name }}</div>
-                                            <small class="text-muted" style="font-size:0.75rem;">
-                                                <i class="bi bi-clock me-1"></i>{{ $stf->staffProfile?->shift ?? 'Ca trực' }} · SĐT: {{ $stf->staffProfile?->phone ?? '—' }}
-                                            </small>
+                                            <div class="fw-bold text-dark" style="font-size:0.88rem; line-height:1.2;">{{ $s->name }}</div>
+                                            <small class="text-muted" style="font-size:0.75rem;">{{ $s->staffProfile?->title ?: 'Kỹ thuật viên TLU' }}</small>
                                         </div>
                                     </div>
-                                    <span class="badge bg-success-subtle text-success border" style="font-size:0.72rem;">Đang giữ: {{ $activeCnt }} ticket</span>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-2 px-2 py-1" style="font-size:0.72rem;">
+                                        <i class="bi bi-clock me-1"></i>{{ $s->staffProfile?->shift ?? 'Ca Trực' }}
+                                    </span>
                                 </label>
                             @endforeach
                         </div>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="font-size:0.85rem;">Ghi chú bàn giao công việc <span class="text-muted font-normal">(Tùy chọn)</span></label>
-                        <textarea name="note" rows="2" class="form-control rounded-3" style="font-size:0.85rem; resize:none;" placeholder="Dặn dò KTV đồng nghiệp về lưu ý phòng học/thiết bị..."></textarea>
+                        <label class="form-label fw-bold" style="font-size:0.85rem;">Ghi chú nội bộ</label>
+                        <textarea name="note" class="form-control rounded-3" rows="2" placeholder="Ghi chú nguyên nhân chuyển giao..."></textarea>
                     </div>
                 </div>
-                <div class="modal-footer border-0 px-4 pb-4 pt-0 d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary flex-grow-1 rounded-3" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-success flex-grow-1 fw-bold rounded-3">Xác nhận phân công</button>
+                <div class="modal-footer bg-light border-0 py-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-3" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4 fw-bold">Xác nhận phân công</button>
                 </div>
             </form>
         </div>
@@ -314,10 +409,9 @@
 
 @push('scripts')
 <script>
-    function openStaffAssignModal(ticketId, ticketTitle) {
-        const form = document.getElementById('staffAssignForm');
-        form.action = `/staff/tickets/${ticketId}/reassign`;
-        document.getElementById('staffAssignModalTicketTitle').textContent = `Ticket #${ticketId}: ${ticketTitle}`;
+    function openStaffAssignModal(ticketId, title) {
+        document.getElementById('assignModalTicketTitle').innerText = 'Sự cố: #' + String(ticketId).padStart(4, '0') + ' - ' + title;
+        document.getElementById('staffAssignForm').action = '/staff/tickets/' + ticketId + '/reassign';
         new bootstrap.Modal(document.getElementById('staffAssignModal')).show();
     }
 </script>

@@ -8,20 +8,20 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        * { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        h1, h2, h3, h4, .brand-title { font-family: 'Outfit', 'Inter', sans-serif; }
 
         :root {
-            --stf-primary:    #0d6efd;
-            --stf-primary-dark:#0a58ca;
-            --stf-dark:       #004085;
-            --stf-sidebar-bg: #0f172a;
-            --stf-sidebar-w:  265px;
-            --stf-bg:         #f8fafc;
+            --stf-primary:       #0d6efd;
+            --stf-primary-dark:  #0a58ca;
+            --stf-sidebar-bg:    #0f172a;
+            --stf-sidebar-w:     265px;
+            --stf-bg:            #f8fafc;
         }
 
         body {
@@ -31,10 +31,10 @@
             color: #1e293b;
         }
 
-        /* ─── SIDEBAR DESIGN (TLU ROYAL BLUE THEME) ─────────── */
+        /* ─── SIDEBAR DESIGN (ROYAL BLUE INDIGO THEME) ─────────── */
         .stf-sidebar {
             width: var(--stf-sidebar-w);
-            background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%);
+            background: linear-gradient(180deg, #0d6efd 0%, #0369a1 100%);
             color: white;
             flex-shrink: 0;
             display: flex;
@@ -44,12 +44,12 @@
             bottom: 0;
             left: 0;
             z-index: 1040;
-            box-shadow: 4px 0 20px rgba(13,110,253,0.25);
+            box-shadow: 4px 0 24px rgba(13,110,253,0.22);
             transition: transform 0.3s ease;
         }
 
         .stf-sidebar .brand-header {
-            padding: 1.25rem 1.25rem;
+            padding: 1.35rem 1.25rem;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -58,21 +58,21 @@
         }
 
         .stf-sidebar .brand-icon {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--stf-primary);
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             box-shadow: 0 4px 14px rgba(0,0,0,0.15);
         }
 
         .stf-sidebar .brand-title {
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: white;
             line-height: 1.2;
             letter-spacing: -0.02em;
@@ -80,14 +80,14 @@
 
         .stf-sidebar .role-badge {
             font-size: 0.68rem;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.22);
             color: #ffffff;
             padding: 3px 9px;
             border-radius: 6px;
             font-weight: 700;
             text-uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid rgba(255,255,255,0.3);
+            letter-spacing: 0.06em;
+            border: 1px solid rgba(255,255,255,0.35);
         }
 
         .sidebar-menu {
@@ -129,7 +129,7 @@
         .sidebar-item:hover {
             background: rgba(255,255,255,0.18);
             color: white;
-            transform: translateX(3px);
+            transform: translateX(4px);
         }
 
         .sidebar-item:hover i { color: white; }
@@ -138,7 +138,7 @@
             background: white;
             color: var(--stf-primary);
             font-weight: 700;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.14);
         }
 
         .sidebar-item.active i { color: var(--stf-primary); }
@@ -199,7 +199,7 @@
         .user-avatar-stf {
             width: 34px;
             height: 34px;
-            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);
             color: white;
             border-radius: 10px;
             display: flex;
@@ -218,9 +218,9 @@
 
         /* ─── CARDS & BADGES ─────────────────────────────────── */
         .card {
-            border: none;
+            border: 1px solid #f1f5f9;
             border-radius: 16px;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 8px rgba(0,0,0,0.04);
         }
 
         .badge-status {
@@ -365,7 +365,7 @@
                 <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
                     <i class="bi bi-check-circle-fill fs-5"></i>
                     <div>{{ session('success') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -373,7 +373,7 @@
                 <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
                     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
                     <div>{{ session('error') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -387,6 +387,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tự động ẩn thông báo Alert sau 4 giây (4000ms)
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert-dismissible');
+                alerts.forEach(function (alertEl) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                        const alert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                        if (alert) alert.close();
+                    } else {
+                        alertEl.style.transition = 'opacity 0.5s ease';
+                        alertEl.style.opacity = '0';
+                        setTimeout(() => alertEl.remove(), 500);
+                    }
+                });
+            }, 4000);
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

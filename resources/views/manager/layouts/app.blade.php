@@ -354,7 +354,7 @@
                 <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
                     <i class="bi bi-check-circle-fill fs-5"></i>
                     <div>{{ session('success') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -362,7 +362,7 @@
                 <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
                     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
                     <div>{{ session('error') }}</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
 
@@ -376,6 +376,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tự động ẩn thông báo Alert sau 4 giây (4000ms)
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert-dismissible');
+                alerts.forEach(function (alertEl) {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                        const alert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                        if (alert) alert.close();
+                    } else {
+                        alertEl.style.transition = 'opacity 0.5s ease';
+                        alertEl.style.opacity = '0';
+                        setTimeout(() => alertEl.remove(), 500);
+                    }
+                });
+            }, 4000);
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

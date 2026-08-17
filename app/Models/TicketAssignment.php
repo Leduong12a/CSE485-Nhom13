@@ -41,4 +41,9 @@ class TicketAssignment extends Model
     {
         return $this->belongsTo(User::class, 'assigned_by_user_id');
     }
+
+    public function assignedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_by_user_id');
+    }
 }
