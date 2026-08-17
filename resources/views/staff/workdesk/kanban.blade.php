@@ -71,12 +71,12 @@
 {{-- Page Header --}}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-0">Workdesk Dạng Thẻ Kanban</h1>
-        <p class="text-muted mb-0" style="font-size:0.85rem;">Quản lý và chuyển đổi nhanh tiến độ xử lý sự cố qua 3 cột Kanban</p>
+        <h1 class="h3 fw-bold text-dark mb-0">Bàn làm việc Kỹ thuật viên</h1>
+        <p class="text-muted mb-0" style="font-size:0.85rem;">Giao diện Thẻ Kanban — Quản lý 3 cột tiến độ xử lý sự cố</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('staff.workdesk.index') }}" class="btn btn-outline-primary rounded-pill px-3 fw-bold" style="font-size:0.85rem;">
-            <i class="bi bi-table me-1"></i> Chuyển sang Dạng Bảng
+        <a href="{{ route('staff.workdesk.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 fw-bold" style="font-size:0.82rem;">
+            <i class="bi bi-table me-1"></i> Xem Dạng Bảng
         </a>
     </div>
 </div>

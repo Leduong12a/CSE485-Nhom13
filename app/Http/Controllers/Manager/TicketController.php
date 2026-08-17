@@ -94,6 +94,11 @@ class TicketController extends Controller
             'staff_id.exists'   => 'Kỹ thuật viên không hợp lệ.',
         ]);
 
+        if (in_array($ticket->status, ['CLOSED', 'RESOLVED'])) {
+            return redirect()->back()
+                ->with('error', 'Sự cố này đã hoàn thành hoặc đã đóng, không thể phân công lại.');
+        }
+
         $staff = User::where('id', $request->staff_id)->where('role', 'STAFF')->firstOrFail();
         $oldAssigneeId = $ticket->current_assignee_id;
 

@@ -101,8 +101,8 @@
         <p class="text-muted mb-0" style="font-size:0.85rem;">Quản lý danh sách sự cố được giao &amp; Hàng chờ tiếp nhận chung toàn bộ hệ thống</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('staff.workdesk.kanban') }}" class="btn btn-outline-primary rounded-pill px-3 fw-bold" style="font-size:0.85rem;">
-            <i class="bi bi-kanban-fill me-1"></i> Chuyển sang Kanban Board
+        <a href="{{ route('staff.workdesk.kanban') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 fw-bold" style="font-size:0.82rem;">
+            <i class="bi bi-kanban-fill me-1"></i> Xem Thẻ Kanban
         </a>
     </div>
 </div>

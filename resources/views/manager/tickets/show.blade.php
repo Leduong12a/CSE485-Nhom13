@@ -18,10 +18,12 @@
         <a href="{{ route('manager.tickets.index') }}" class="btn btn-outline-secondary rounded-3" style="font-size:0.85rem;">
             <i class="bi bi-arrow-left me-1"></i> Quay lại
         </a>
-        <button type="button" class="btn btn-primary rounded-3 fw-bold" style="font-size:0.85rem;"
-                onclick="openAssignModal({{ $ticket->id }}, '{{ addslashes($ticket->title) }}')">
-            <i class="bi bi-person-plus-fill me-1"></i> Phân công / Đổi KTV
-        </button>
+        @if (!in_array($ticket->status, ['CLOSED', 'RESOLVED']))
+            <button type="button" class="btn btn-primary rounded-3 fw-bold" style="font-size:0.85rem;"
+                    onclick="openAssignModal({{ $ticket->id }}, '{{ addslashes($ticket->title) }}')">
+                <i class="bi bi-person-plus-fill me-1"></i> Phân công / Đổi KTV
+            </button>
+        @endif
     </div>
 </div>
 
@@ -192,10 +194,16 @@
                         </div>
                     @endif
 
-                    <button type="button" class="btn btn-outline-primary w-100 rounded-3" style="font-size:0.85rem;"
-                            onclick="openAssignModal({{ $ticket->id }}, '{{ addslashes($ticket->title) }}')">
-                        <i class="bi bi-arrow-repeat me-1"></i> Đổi Kỹ thuật viên khác
-                    </button>
+                    @if (!in_array($ticket->status, ['CLOSED', 'RESOLVED']))
+                        <button type="button" class="btn btn-outline-primary w-100 rounded-3" style="font-size:0.85rem;"
+                                onclick="openAssignModal({{ $ticket->id }}, '{{ addslashes($ticket->title) }}')">
+                            <i class="bi bi-arrow-repeat me-1"></i> Đổi Kỹ thuật viên khác
+                        </button>
+                    @else
+                        <div class="p-2 bg-light text-center rounded-3 text-muted" style="font-size:0.78rem;">
+                            <i class="bi bi-lock-fill me-1 text-secondary"></i> Sự cố đã kết thúc (Không thể đổi KTV)
+                        </div>
+                    @endif
                 @else
                     <div class="text-center py-3 text-muted">
                         <i class="bi bi-hourglass-split display-6 text-warning d-block mb-2"></i>

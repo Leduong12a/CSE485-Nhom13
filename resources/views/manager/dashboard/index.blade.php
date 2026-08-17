@@ -84,11 +84,36 @@
         <h1 class="h3 fw-bold text-dark mb-0">Analytics Dashboard</h1>
         <p class="text-muted mb-0" style="font-size:0.85rem;">Tổng quan chỉ số hoạt động &amp; Báo cáo chất lượng hỗ trợ kỹ thuật TLU</p>
     </div>
-    <div class="d-flex gap-2">
-        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold" style="font-size:0.8rem;">
-            <i class="bi bi-calendar3 me-1"></i> Tháng {{ date('m/Y') }}
-        </span>
-    </div>
+    <form method="GET" action="{{ route('manager.dashboard') }}" class="d-flex align-items-center gap-2 flex-wrap" id="dashboardFilterForm">
+        {{-- Radio Switch Lọc theo Tháng / Ngày --}}
+        <div class="btn-group btn-group-sm" role="group">
+            <input type="radio" class="btn-check" name="filter_type" id="filterTypeMonth" value="month" {{ $filterType === 'month' ? 'checked' : '' }} onchange="toggleFilterInputs(this.value)">
+            <label class="btn btn-outline-primary fw-bold" for="filterTypeMonth">Theo Tháng</label>
+
+            <input type="radio" class="btn-check" name="filter_type" id="filterTypeDate" value="date" {{ $filterType === 'date' ? 'checked' : '' }} onchange="toggleFilterInputs(this.value)">
+            <label class="btn btn-outline-primary fw-bold" for="filterTypeDate">Theo Ngày</label>
+        </div>
+
+        {{-- Input Lọc Theo Tháng --}}
+        <div id="monthInputContainer" class="input-group input-group-sm {{ $filterType === 'date' ? 'd-none' : '' }}" style="width: auto;">
+            <span class="input-group-text bg-primary text-white border-primary rounded-start-pill px-2.5">
+                <i class="bi bi-calendar3"></i>
+            </span>
+            <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()"
+                   class="form-control form-control-sm border-primary text-primary fw-bold rounded-end-pill px-3 py-1.5"
+                   style="font-size:0.83rem; cursor:pointer; background:#f0f7ff;" title="Bấm để chọn Tháng/Năm thống kê">
+        </div>
+
+        {{-- Input Lọc Theo Ngày Cụ Thể --}}
+        <div id="dateInputContainer" class="input-group input-group-sm {{ $filterType === 'month' ? 'd-none' : '' }}" style="width: auto;">
+            <span class="input-group-text bg-primary text-white border-primary rounded-start-pill px-2.5">
+                <i class="bi bi-calendar-date"></i>
+            </span>
+            <input type="date" name="date" value="{{ $selectedDate }}" onchange="this.form.submit()"
+                   class="form-control form-control-sm border-primary text-primary fw-bold rounded-end-pill px-3 py-1.5"
+                   style="font-size:0.83rem; cursor:pointer; background:#f0f7ff;" title="Bấm để chọn Ngày cụ thể thống kê">
+        </div>
+    </form>
 </div>
 
 {{-- ── 1. TOP 4 KPI CARDS ── --}}
@@ -102,19 +127,31 @@
             </div>
             <div>
                 <div class="kpi-value">{{ number_format($totalTicketsMonth) }}</div>
-                <div class="kpi-label">Tổng Ticket tháng này</div>
+                <div class="kpi-label">Tổng Ticket ({{ $filterLabel }})</div>
             </div>
         </div>
     </div>
 
     {{-- KPI 2: Tỷ lệ đúng SLA --}}
+    @php
+        if ($slaRate >= 80) {
+            $slaBgColor   = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            $slaTextColor = 'text-success';
+        } elseif ($slaRate >= 50) {
+            $slaBgColor   = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            $slaTextColor = 'text-warning';
+        } else {
+            $slaBgColor   = 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)';
+            $slaTextColor = 'text-danger';
+        }
+    @endphp
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-card">
-            <div class="kpi-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <div class="kpi-icon" style="background: {{ $slaBgColor }};">
                 <i class="bi bi-shield-check"></i>
             </div>
             <div>
-                <div class="kpi-value text-success">{{ $slaRate }}%</div>
+                <div class="kpi-value {{ $slaTextColor }}">{{ $slaRate }}%</div>
                 <div class="kpi-label">Tỷ lệ xử lý đúng SLA</div>
             </div>
         </div>
@@ -291,5 +328,15 @@
             plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
         }
     });
+
+    function toggleFilterInputs(type) {
+        if (type === 'date') {
+            document.getElementById('monthInputContainer').classList.add('d-none');
+            document.getElementById('dateInputContainer').classList.remove('d-none');
+        } else {
+            document.getElementById('dateInputContainer').classList.add('d-none');
+            document.getElementById('monthInputContainer').classList.remove('d-none');
+        }
+    }
 </script>
 @endpush
