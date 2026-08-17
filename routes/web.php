@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MicrosoftController;
+use App\Http\Controllers\Manager\CategoryController as ManagerCategoryController;
+use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
+use App\Http\Controllers\Manager\SlaReportController as ManagerSlaReportController;
+use App\Http\Controllers\Manager\TicketController as ManagerTicketController;
 use App\Http\Controllers\Student\TicketController as StudentTicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,4 +57,37 @@ Route::middleware(['auth', 'role:REQUESTER,STAFF,MANAGER'])
         // UC05: Gửi đánh giá 5 sao
         Route::post('/tickets/{ticket}/survey', [StudentTicketController::class, 'survey'])
             ->name('tickets.survey');
+    });
+
+// ── Phân hệ Quản trị & Trưởng bộ phận (MANAGER) ────────────────────────
+Route::middleware(['auth', 'role:MANAGER'])
+    ->prefix('manager')
+    ->name('manager.')
+    ->group(function () {
+
+        // UC14: Dashboard Analytics & Thống kê KPIs
+        Route::get('/dashboard', [ManagerDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // UC10, UC12: Quản lý Ticket & Phân công KTV
+        Route::get('/tickets', [ManagerTicketController::class, 'index'])
+            ->name('tickets.index');
+        Route::get('/tickets/{ticket}', [ManagerTicketController::class, 'show'])
+            ->name('tickets.show');
+        Route::post('/tickets/{ticket}/assign', [ManagerTicketController::class, 'assign'])
+            ->name('tickets.assign');
+
+        // UC11: Cấu hình Danh mục Sự cố & SLA
+        Route::get('/categories', [ManagerCategoryController::class, 'index'])
+            ->name('categories.index');
+        Route::post('/categories', [ManagerCategoryController::class, 'store'])
+            ->name('categories.store');
+        Route::put('/categories/{category}', [ManagerCategoryController::class, 'update'])
+            ->name('categories.update');
+        Route::delete('/categories/{category}', [ManagerCategoryController::class, 'destroy'])
+            ->name('categories.destroy');
+
+        // UC13: Báo cáo Vi phạm SLA
+        Route::get('/reports/sla', [ManagerSlaReportController::class, 'index'])
+            ->name('reports.sla');
     });

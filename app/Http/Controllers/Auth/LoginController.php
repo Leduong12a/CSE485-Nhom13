@@ -58,7 +58,7 @@ class LoginController extends Controller
         return match ($role) {
             'REQUESTER' => redirect()->route('student.tickets.index'),
             'STAFF'     => redirect()->route('student.tickets.index'), // placeholder until staff portal is built
-            'MANAGER'   => redirect()->route('student.tickets.index'), // placeholder until manager portal is built
+            'MANAGER'   => redirect()->route('manager.dashboard'),
             default     => redirect('/'),
         };
     }
