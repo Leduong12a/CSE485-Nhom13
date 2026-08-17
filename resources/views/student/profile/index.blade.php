@@ -214,23 +214,23 @@
             </div>
             <div class="p-4">
 
-                {{-- Thông báo giải thích SSO & Mật khẩu mặc định --}}
+                {{-- Thông báo giải thích SSO & Thiết lập mật khẩu --}}
                 <div class="p-3 rounded-3 mb-4" style="background:#f0f9ff; border:1px solid #bae6fd; font-size:0.8rem; color:#0369a1;">
                     <i class="bi bi-info-circle-fill me-1 text-primary"></i>
-                    <strong>Mật khẩu mặc định ban đầu:</strong><br>
-                    Mật khẩu khởi tạo mặc định cho tài khoản Sinh viên chính là <strong>Mã Sinh Viên (MSV)</strong> của bạn (Ví dụ: <code>{{ $studentCode !== '—' ? $studentCode : '2351061234' }}</code>).
+                    <strong>Quy trình đăng nhập &amp; Thiết lập Mật khẩu:</strong><br>
+                    Ban đầu, bạn **chỉ có thể Đăng nhập bằng Microsoft Outlook SSO**.
                     <hr class="my-2" style="border-color:#bae6fd;">
-                    Bạn có thể dùng Email + Mật khẩu (MSV) này để đăng nhập trực tiếp, hoặc tiến hành đổi mật khẩu mới bảo mật hơn bên dưới.
+                    Nếu bạn muốn dùng thêm phương thức **Email + Mật khẩu cục bộ** trên trang TLU Helpdesk, hãy tự thiết lập Mật khẩu mới bên dưới.
                 </div>
 
                 <form method="POST" action="{{ route('student.profile.password') }}">
                     @csrf
 
                     <div class="mb-3">
-                        <label for="current_password" class="form-label">Mật khẩu hiện tại <span class="text-danger">*</span></label>
+                        <label for="current_password" class="form-label">Mật khẩu hiện tại <span class="text-muted font-normal">(Chỉ nhập nếu bạn đã từng đổi MK)</span></label>
                         <input type="password" id="current_password" name="current_password"
                                class="form-control @error('current_password') is-invalid @enderror"
-                               placeholder="Mã Sinh Viên (nếu chưa từng đổi) hoặc mật khẩu cũ" required>
+                               placeholder="Bỏ trống nếu đây là lần đầu tạo mật khẩu">
                         @error('current_password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -254,7 +254,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-outline-primary rounded-3 fw-bold px-4" style="font-size:0.875rem;">
-                        <i class="bi bi-key-fill me-1"></i> Lưu mật khẩu mới
+                        <i class="bi bi-key-fill me-1"></i> Thiết lập mật khẩu mới
                     </button>
                 </form>
             </div>

@@ -66,21 +66,28 @@ class ProfileController extends Controller
      */
     public function changePassword(Request $request)
     {
-        $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password'         => ['required', 'confirmed', Password::defaults()],
-        ], [
-            'current_password.required'         => 'Vui lòng nhập mật khẩu hiện tại (Mã Sinh Viên hoặc mật khẩu cũ).',
+        $user = Auth::user();
+
+        // Rules validation: nếu nhập current_password thì kiểm tra, nếu không thì bỏ qua để sinh viên tạo MK lần đầu
+        $rules = [
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ];
+
+        if ($request->filled('current_password')) {
+            $rules['current_password'] = ['current_password'];
+        }
+
+        $request->validate($rules, [
             'current_password.current_password' => 'Mật khẩu hiện tại không chính xác.',
             'password.required'                 => 'Vui lòng nhập mật khẩu mới.',
             'password.confirmed'                => 'Xác nhận mật khẩu mới không trùng khớp.',
         ]);
 
-        Auth::user()->update([
+        $user->update([
             'password' => Hash::make($request->password),
         ]);
 
         return redirect()->route('student.profile.index')
-            ->with('success', 'Mật khẩu của bạn đã được thay đổi thành công!');
+            ->with('success', 'Mật khẩu của bạn đã được khởi tạo/thay đổi thành công! Giờ bạn có thể đăng nhập bằng ô Email + Mật khẩu này.');
     }
 }
