@@ -57,6 +57,14 @@ Route::middleware(['auth', 'role:REQUESTER,STAFF,MANAGER'])
         // UC05: Gửi đánh giá 5 sao
         Route::post('/tickets/{ticket}/survey', [StudentTicketController::class, 'survey'])
             ->name('tickets.survey');
+
+        // Hồ sơ Cá nhân Sinh viên
+        Route::get('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'index'])
+            ->name('profile.index');
+        Route::post('/profile', [\App\Http\Controllers\Student\ProfileController::class, 'update'])
+            ->name('profile.update');
+        Route::post('/profile/password', [\App\Http\Controllers\Student\ProfileController::class, 'changePassword'])
+            ->name('profile.password');
     });
 
 // ── Phân hệ Quản trị & Trưởng bộ phận (MANAGER) ────────────────────────

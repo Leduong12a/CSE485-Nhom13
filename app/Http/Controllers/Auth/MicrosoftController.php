@@ -49,12 +49,16 @@ class MicrosoftController extends Controller
         // Tự động tìm Khoa dựa trên Mã Sinh Viên trong email
         $departmentId = $this->detectDepartment($email);
 
+        // Lấy username làm Mật khẩu mặc định ban đầu (Mã Sinh Viên)
+        $username = explode('@', $email)[0];
+        $defaultPassword = bcrypt($username);
+
         // Tìm hoặc tạo User trong CSDL
         $user = User::firstOrCreate(
             ['email' => $email],
             [
-                'name'              => $name ?? explode('@', $email)[0],
-                'password'          => bcrypt(\Illuminate\Support\Str::random(32)), // password ngẫu nhiên (không dùng)
+                'name'              => $name ?? $username,
+                'password'          => $defaultPassword, // Mật khẩu mặc định ban đầu chính là Mã Sinh Viên
                 'role'              => $role,
                 'is_active'         => true,
                 'department_id'     => $departmentId,

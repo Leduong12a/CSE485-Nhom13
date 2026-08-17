@@ -336,7 +336,7 @@
                         </div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="{{ route('student.profile.index') }}">
                             <i class="bi bi-person-circle me-2 text-primary"></i> Hồ sơ cá nhân
                         </a>
                     </li>
