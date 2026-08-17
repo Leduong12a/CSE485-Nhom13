@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        // 1. SEED PHÒNG BAN / KHOA (departments)
         $deptCnttId = DB::table('departments')->insertGetId([
             'code' => 'CNTT',
             'name' => 'Khoa Công nghệ thông tin',
