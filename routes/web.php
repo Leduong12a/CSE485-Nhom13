@@ -6,6 +6,9 @@ use App\Http\Controllers\Manager\CategoryController as ManagerCategoryController
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\Manager\SlaReportController as ManagerSlaReportController;
 use App\Http\Controllers\Manager\TicketController as ManagerTicketController;
+use App\Http\Controllers\Staff\ProfileController as StaffProfileController;
+use App\Http\Controllers\Staff\TicketController as StaffTicketController;
+use App\Http\Controllers\Staff\WorkdeskController as StaffWorkdeskController;
 use App\Http\Controllers\Student\TicketController as StudentTicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +68,39 @@ Route::middleware(['auth', 'role:REQUESTER,STAFF,MANAGER'])
             ->name('profile.update');
         Route::post('/profile/password', [\App\Http\Controllers\Student\ProfileController::class, 'changePassword'])
             ->name('profile.password');
+    });
+
+// ── Phân hệ Cán bộ Kỹ thuật (STAFF) ───────────────────────────────────
+Route::middleware(['auth', 'role:STAFF,MANAGER'])
+    ->prefix('staff')
+    ->name('staff.')
+    ->group(function () {
+
+        // UC06: Workdesk Dạng Bảng (2 Tab)
+        Route::get('/workdesk', [StaffWorkdeskController::class, 'index'])
+            ->name('workdesk.index');
+
+        // UC09: Workdesk Dạng Thẻ Kanban
+        Route::get('/workdesk/kanban', [StaffWorkdeskController::class, 'kanban'])
+            ->name('workdesk.kanban');
+
+        // UC07, UC08: Chi tiết Ticket & Xử lý
+        Route::get('/tickets/{ticket}', [StaffTicketController::class, 'show'])
+            ->name('tickets.show');
+        Route::post('/tickets/{ticket}/claim', [StaffTicketController::class, 'claim'])
+            ->name('tickets.claim');
+        Route::post('/tickets/{ticket}/reassign', [StaffTicketController::class, 'reassign'])
+            ->name('tickets.reassign');
+        Route::post('/tickets/{ticket}/status', [StaffTicketController::class, 'updateStatus'])
+            ->name('tickets.status');
+        Route::post('/tickets/{ticket}/comments', [StaffTicketController::class, 'addComment'])
+            ->name('tickets.comments.store');
+
+        // Hồ sơ KTV & Ca trực
+        Route::get('/profile', [StaffProfileController::class, 'index'])
+            ->name('profile.index');
+        Route::post('/profile', [StaffProfileController::class, 'update'])
+            ->name('profile.update');
     });
 
 // ── Phân hệ Quản trị & Trưởng bộ phận (MANAGER) ────────────────────────
