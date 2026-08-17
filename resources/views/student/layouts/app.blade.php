@@ -340,8 +340,19 @@
                                     <i class="bi bi-ticket-perforated-fill fs-6"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark" style="font-size:0.83rem;">Ticket #{{ str_pad($notif->ticket_id, 4, '0', STR_PAD_LEFT) }} thay đổi trạng thái</div>
-                                    <div class="text-muted" style="font-size:0.76rem;">Trạng thái: <strong>{{ $notif->new_status }}</strong></div>
+                                    <div class="fw-bold text-dark" style="font-size:0.83rem;">{{ Str::limit($notif->ticket?->title ?? ('Ticket #' . str_pad($notif->ticket_id, 4, '0', STR_PAD_LEFT)), 45) }}</div>
+                                    <div class="text-muted" style="font-size:0.76rem;">
+                                        Trạng thái: 
+                                        <strong class="text-primary">
+                                            @switch($notif->new_status)
+                                                @case('IN_PROGRESS') 🟡 Đang xử lý @break
+                                                @case('RESOLVED')    🟢 Đã khắc phục @break
+                                                @case('CLOSED')      ⚫ Đã đóng @break
+                                                @case('REOPENED')    🔴 Mở lại @break
+                                                @default             🔵 Mới gửi
+                                            @endswitch
+                                        </strong>
+                                    </div>
                                     <small class="text-secondary" style="font-size:0.68rem;">{{ $notif->created_at->diffForHumans() }}</small>
                                 </div>
                             </a>

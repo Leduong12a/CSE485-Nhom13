@@ -342,8 +342,8 @@
                                         <i class="bi bi-alarm-fill fs-6"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-dark" style="font-size:0.83rem;">Cảnh báo quá hạn SLA</div>
-                                        <div class="text-muted" style="font-size:0.76rem;">Ticket #{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}: {{ Str::limit($t->title, 35) }}</div>
+                                        <div class="fw-bold text-dark" style="font-size:0.83rem;">{{ Str::limit($t->title, 45) }}</div>
+                                        <div class="text-muted" style="font-size:0.76rem;">Cảnh báo sự cố vượt quá thời hạn cam kết SLA.</div>
                                         <small class="text-danger fw-bold" style="font-size:0.68rem;">Hạn SLA: {{ $t->sla_deadline?->format('H:i d/m/Y') }}</small>
                                     </div>
                                 </a>

@@ -353,8 +353,8 @@
                                         <i class="bi bi-ticket-perforated-fill fs-6"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-dark" style="font-size:0.83rem;">Phiếu sự cố mới phân công</div>
-                                        <div class="text-muted" style="font-size:0.76rem;">Phiếu #{{ str_pad($assign->ticket_id, 4, '0', STR_PAD_LEFT) }}: {{ Str::limit($assign->ticket?->title ?? 'Sự cố mới', 40) }}</div>
+                                        <div class="fw-bold text-dark" style="font-size:0.83rem;">{{ Str::limit($assign->ticket?->title ?? ('Phiếu #' . str_pad($assign->ticket_id, 4, '0', STR_PAD_LEFT)), 45) }}</div>
+                                        <div class="text-muted" style="font-size:0.76rem;">Bạn vừa được phân công xử lý phiếu sự cố này.</div>
                                         <small class="text-secondary" style="font-size:0.68rem;">{{ \Carbon\Carbon::parse($assign->assigned_at)->diffForHumans() }}</small>
                                     </div>
                                 </a>
