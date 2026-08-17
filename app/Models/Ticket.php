@@ -50,6 +50,11 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'current_assignee_id');
     }
 
+    public function currentAssignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'current_assignee_id');
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(TicketComment::class);
@@ -71,6 +76,11 @@ class Ticket extends Model
     }
 
     public function survey(): HasOne
+    {
+        return $this->hasOne(SatisfactionSurvey::class);
+    }
+
+    public function satisfactionSurvey(): HasOne
     {
         return $this->hasOne(SatisfactionSurvey::class);
     }
