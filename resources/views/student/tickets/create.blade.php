@@ -463,12 +463,7 @@
 
                 <div class="sla-badge">
                     <i class="bi bi-clock-history"></i>
-                    <span>Thời gian xử lý theo cam kết SLA của từng loại sự cố (4h – 48h).</span>
-                </div>
-
-                <div class="mt-3 p-3 rounded-3" style="background:#fff1f2; font-size:0.78rem; color:#be123c;">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                    <strong>Sự cố khẩn cấp:</strong> Chọn mức ưu tiên <strong>🔴 Cao</strong> để được ưu tiên xử lý trong 4 giờ.
+                    <span>Thời gian xử lý theo cam kết SLA của từng loại sự cố.</span>
                 </div>
             </div>
         </div>

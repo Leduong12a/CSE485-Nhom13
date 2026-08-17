@@ -310,11 +310,53 @@
                 <i class="bi bi-plus-circle-fill"></i>
             </a>
 
-            {{-- Notification Bell --}}
-            <button class="btn-notif" title="Thông báo" id="notifToggle">
-                <i class="bi bi-bell-fill"></i>
-                <span class="notif-badge"></span>
-            </button>
+            {{-- Notification Bell Dropdown --}}
+            @php
+                $studentNotifs = \App\Models\TicketStatusLog::whereHas('ticket', function($q) {
+                        $q->where('requester_id', Auth::id());
+                    })
+                    ->with('ticket')
+                    ->latest()
+                    ->take(5)
+                    ->get();
+                $unreadCount = $studentNotifs->count();
+            @endphp
+            <div class="dropdown">
+                <button class="btn-notif dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo hệ thống">
+                    <i class="bi bi-bell-fill"></i>
+                    @if ($unreadCount > 0)
+                        <span class="notif-badge"></span>
+                    @endif
+                </button>
+                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0 rounded-4 overflow-hidden" style="width: 330px; max-height: 420px;">
+                    <div class="p-3 bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0" style="font-size:0.88rem;"><i class="bi bi-bell-fill me-2"></i>Thông báo hệ thống</h6>
+                        <span class="badge bg-white text-primary rounded-pill" style="font-size:0.7rem;">{{ $unreadCount }} Mới</span>
+                    </div>
+                    <div class="p-0 overflow-auto" style="max-height: 310px;">
+                        @forelse ($studentNotifs as $notif)
+                            <a href="{{ route('student.tickets.show', $notif->ticket_id) }}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap" style="white-space: normal;">
+                                <div class="rounded-circle bg-primary-subtle text-primary p-2 flex-shrink-0" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;">
+                                    <i class="bi bi-ticket-perforated-fill fs-6"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark" style="font-size:0.83rem;">Ticket #{{ str_pad($notif->ticket_id, 4, '0', STR_PAD_LEFT) }} thay đổi trạng thái</div>
+                                    <div class="text-muted" style="font-size:0.76rem;">Trạng thái: <strong>{{ $notif->new_status }}</strong></div>
+                                    <small class="text-secondary" style="font-size:0.68rem;">{{ $notif->created_at->diffForHumans() }}</small>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="p-4 text-center text-muted" style="font-size:0.8rem;">
+                                <i class="bi bi-bell-slash fs-4 d-block mb-1 text-secondary"></i>
+                                Chưa có thông báo mới nào.
+                            </div>
+                        @endforelse
+                    </div>
+                    <div class="p-2 text-center bg-light border-top">
+                        <a href="{{ route('student.tickets.index') }}" class="text-decoration-none text-primary fw-bold" style="font-size:0.78rem;">Xem tất cả sự cố của tôi &rarr;</a>
+                    </div>
+                </div>
+            </div>
 
             {{-- User Profile Dropdown --}}
             <div class="dropdown user-dropdown">

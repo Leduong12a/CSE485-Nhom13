@@ -325,6 +325,52 @@
                     <i class="bi bi-clock me-1"></i> {{ $shift }}
                 </span>
 
+                {{-- Notification Bell Dropdown --}}
+                @php
+                    $staffNotifs = \App\Models\TicketAssignment::where('assigned_to_staff_id', Auth::id())
+                        ->with('ticket')
+                        ->latest('assigned_at')
+                        ->take(5)
+                        ->get();
+                    $staffUnread = $staffNotifs->count();
+                @endphp
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-3 position-relative p-2 border" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo công việc">
+                        <i class="bi bi-bell-fill text-primary fs-6"></i>
+                        @if ($staffUnread > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                        @endif
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0 rounded-4 overflow-hidden" style="width: 330px; max-height: 420px;">
+                        <div class="p-3 bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold mb-0" style="font-size:0.88rem;"><i class="bi bi-bell-fill me-2"></i>Thông báo Kỹ thuật viên</h6>
+                            <span class="badge bg-white text-primary rounded-pill" style="font-size:0.7rem;">{{ $staffUnread }} Mới</span>
+                        </div>
+                        <div class="p-0 overflow-auto" style="max-height: 310px;">
+                            @forelse ($staffNotifs as $assign)
+                                <a href="{{ route('staff.tickets.show', $assign->ticket_id) }}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap" style="white-space: normal;">
+                                    <div class="rounded-circle bg-warning-subtle text-warning p-2 flex-shrink-0" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-ticket-perforated-fill fs-6"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size:0.83rem;">Phiếu sự cố mới phân công</div>
+                                        <div class="text-muted" style="font-size:0.76rem;">Phiếu #{{ str_pad($assign->ticket_id, 4, '0', STR_PAD_LEFT) }}: {{ Str::limit($assign->ticket?->title ?? 'Sự cố mới', 40) }}</div>
+                                        <small class="text-secondary" style="font-size:0.68rem;">{{ \Carbon\Carbon::parse($assign->assigned_at)->diffForHumans() }}</small>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="p-4 text-center text-muted" style="font-size:0.8rem;">
+                                    <i class="bi bi-bell-slash fs-4 d-block mb-1 text-secondary"></i>
+                                    Chưa có phân công công việc mới.
+                                </div>
+                            @endforelse
+                        </div>
+                        <div class="p-2 text-center bg-light border-top">
+                            <a href="{{ route('staff.workdesk.index') }}" class="text-decoration-none text-primary fw-bold" style="font-size:0.78rem;">Đi tới Bàn làm việc &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- User profile dropdown --}}
                 <div class="dropdown user-dropdown">
                     <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

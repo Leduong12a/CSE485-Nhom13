@@ -314,6 +314,52 @@
                     <i class="bi bi-alarm-fill"></i> Báo cáo SLA
                 </a>
 
+                {{-- Notification Bell Dropdown --}}
+                @php
+                    $mgrOverdueNotifs = \App\Models\Ticket::whereNotIn('status', ['RESOLVED', 'CLOSED'])
+                        ->where('sla_deadline', '<', now())
+                        ->latest()
+                        ->take(5)
+                        ->get();
+                    $mgrUnread = $mgrOverdueNotifs->count();
+                @endphp
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-3 position-relative p-2 border" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo hệ thống Quản lý">
+                        <i class="bi bi-bell-fill text-primary fs-6"></i>
+                        @if ($mgrUnread > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                        @endif
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0 rounded-4 overflow-hidden" style="width: 330px; max-height: 420px;">
+                        <div class="p-3 bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold mb-0" style="font-size:0.88rem;"><i class="bi bi-bell-fill me-2"></i>Thông báo Quản trị viên</h6>
+                            <span class="badge bg-white text-primary rounded-pill" style="font-size:0.7rem;">{{ $mgrUnread }} Cảnh báo</span>
+                        </div>
+                        <div class="p-0 overflow-auto" style="max-height: 310px;">
+                            @forelse ($mgrOverdueNotifs as $t)
+                                <a href="{{ route('manager.tickets.show', $t->id) }}" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap" style="white-space: normal;">
+                                    <div class="rounded-circle bg-danger-subtle text-danger p-2 flex-shrink-0" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-alarm-fill fs-6"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size:0.83rem;">Cảnh báo quá hạn SLA</div>
+                                        <div class="text-muted" style="font-size:0.76rem;">Ticket #{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}: {{ Str::limit($t->title, 35) }}</div>
+                                        <small class="text-danger fw-bold" style="font-size:0.68rem;">Hạn SLA: {{ $t->sla_deadline?->format('H:i d/m/Y') }}</small>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="p-4 text-center text-muted" style="font-size:0.8rem;">
+                                    <i class="bi bi-check-circle fs-4 d-block mb-1 text-success"></i>
+                                    Không có sự cố nào bị quá hạn SLA.
+                                </div>
+                            @endforelse
+                        </div>
+                        <div class="p-2 text-center bg-light border-top">
+                            <a href="{{ route('manager.tickets.index') }}" class="text-decoration-none text-primary fw-bold" style="font-size:0.78rem;">Quản lý tất cả Ticket &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- User profile dropdown --}}
                 <div class="dropdown user-dropdown">
                     <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
