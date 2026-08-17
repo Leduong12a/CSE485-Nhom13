@@ -55,12 +55,12 @@
                         <div class="d-flex flex-wrap gap-1 mt-1 {{ $isMe ? 'justify-content-end' : '' }}">
                             @foreach ($comment->attachments as $att)
                                 @if (str_starts_with($att->file_type ?? '', 'image/'))
-                                    <img src="{{ asset('storage/' . $att->file_path) }}"
+                                    <img src="{{ $att->url }}"
                                          alt="Ảnh đính kèm"
                                          style="width:70px; height:70px; border-radius:8px; object-fit:cover; cursor:pointer; border:1.5px solid #e5e7eb;"
                                          onclick="document.getElementById('lightboxImg').src=this.src; new bootstrap.Modal(document.getElementById('lightboxModal')).show()">
                                 @else
-                                    <a href="{{ asset('storage/' . $att->file_path) }}" target="_blank"
+                                    <a href="{{ $att->url }}" target="_blank"
                                        style="display:flex; align-items:center; gap:4px; background:rgba(0,0,0,0.06); border-radius:7px; padding:4px 8px; font-size:0.72rem; color:inherit; text-decoration:none;">
                                         <i class="bi bi-paperclip"></i> {{ basename($att->file_path) }}
                                     </a>
@@ -108,21 +108,38 @@
                 {{-- Preview files đính kèm trong chat --}}
                 <div id="chatFilesPreview" class="d-flex flex-wrap gap-1" style="display:none !important;"></div>
 
-                <div class="d-flex align-items-center justify-content-between">
-                    {{-- Nút đính kèm file --}}
-                    <label for="chatAttachments" style="
-                        display: inline-flex; align-items: center; gap: 5px;
-                        cursor: pointer; font-size: 0.8rem; color: #64748b;
-                        padding: 0.35rem 0.7rem; border-radius: 8px;
-                        border: 1.5px solid #e5e7eb;
-                        transition: border-color 0.15s, color 0.15s;
-                    " class="btn-attach" title="Đính kèm tệp">
-                        <i class="bi bi-paperclip"></i> Đính kèm
-                        <input type="file" id="chatAttachments" name="attachments[]"
-                               accept=".jpg,.jpeg,.png,.pdf" multiple
-                               style="display:none;"
-                               onchange="previewChatFiles(this)">
-                    </label>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex gap-1">
+                        {{-- Nút Chụp ảnh trực tiếp từ Camera điện thoại --}}
+                        <label for="chatCamera" style="
+                            display: inline-flex; align-items: center; gap: 5px;
+                            cursor: pointer; font-size: 0.8rem; color: #0d6efd;
+                            padding: 0.35rem 0.7rem; border-radius: 8px;
+                            border: 1.5px solid #bfdbfe; background:#eff6ff;
+                            transition: border-color 0.15s, color 0.15s;
+                        " class="btn-attach" title="Chụp ảnh từ Camera">
+                            <i class="bi bi-camera-fill"></i> Chụp ảnh
+                            <input type="file" id="chatCamera" name="attachments[]"
+                                   accept="image/*" capture="environment"
+                                   style="display:none;"
+                                   onchange="previewChatFiles(this)">
+                        </label>
+
+                        {{-- Nút đính kèm tệp từ thư viện --}}
+                        <label for="chatAttachments" style="
+                            display: inline-flex; align-items: center; gap: 5px;
+                            cursor: pointer; font-size: 0.8rem; color: #64748b;
+                            padding: 0.35rem 0.7rem; border-radius: 8px;
+                            border: 1.5px solid #e5e7eb;
+                            transition: border-color 0.15s, color 0.15s;
+                        " class="btn-attach" title="Chọn từ Thư viện">
+                            <i class="bi bi-images"></i> Thư viện
+                            <input type="file" id="chatAttachments" name="attachments[]"
+                                   accept=".jpg,.jpeg,.png,.pdf" multiple
+                                   style="display:none;"
+                                   onchange="previewChatFiles(this)">
+                        </label>
+                    </div>
 
                     {{-- Nút gửi --}}
                     <button type="submit" id="btnSend"

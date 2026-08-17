@@ -67,7 +67,7 @@
                         @if ($isImage)
                             <div class="attachment-thumb" data-lightbox="{{ $i }}"
                                  style="width:90px; height:90px; border-radius:10px; overflow:hidden; cursor:pointer; border:1.5px solid #e5e7eb; position:relative; flex-shrink:0;">
-                                <img src="{{ asset('storage/' . $attachment->file_path) }}"
+                                <img src="{{ $attachment->url }}"
                                      alt="Ảnh minh chứng {{ $i+1 }}"
                                      style="width:100%; height:100%; object-fit:cover;"
                                      loading="lazy">
@@ -77,7 +77,7 @@
                                 </div>
                             </div>
                         @else
-                            <a href="{{ asset('storage/' . $attachment->file_path) }}" target="_blank"
+                            <a href="{{ $attachment->url }}" target="_blank"
                                style="width:90px; height:90px; border-radius:10px; border:1.5px solid #e5e7eb; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; background:#fafafa; flex-shrink:0; transition:border-color 0.15s, box-shadow 0.15s;"
                                class="pdf-thumb">
                                 <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size:1.8rem;"></i>

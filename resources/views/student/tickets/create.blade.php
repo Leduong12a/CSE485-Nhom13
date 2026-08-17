@@ -380,6 +380,22 @@
                 <div class="mb-4">
                     <label class="form-label">Ảnh / Tệp minh chứng <span style="font-weight:400; color:#94a3b8;">(Tối đa 5 tệp, mỗi tệp &lt; 5MB)</span></label>
 
+                    {{-- Nút Chụp ảnh thông minh (Camera điện thoại / Live Webcam PC) --}}
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <button type="button" onclick="startCameraOrWebcam()" class="btn btn-outline-primary w-100 py-2.5 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm" style="font-size:0.85rem; min-height:48px;">
+                                <i class="bi bi-camera-fill fs-5"></i> <span>Chụp ảnh từ Camera</span>
+                            </button>
+                            <input type="file" id="cameraCapture" accept="image/*" capture="environment" class="d-none" onchange="handleFileSelect(this)">
+                        </div>
+                        <div class="col-6">
+                            <label for="attachments" class="btn btn-outline-secondary w-100 py-2.5 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm" style="font-size:0.85rem; cursor:pointer; min-height:48px;">
+                                <i class="bi bi-images fs-5"></i> <span>Chọn từ Thư viện</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Dropzone Kéo Thả dành cho Máy tính / Tablet --}}
                     <div class="drop-zone" id="dropZone">
                         <input type="file" id="attachments" name="attachments[]"
                                accept=".jpg,.jpeg,.png,.pdf"
@@ -401,14 +417,14 @@
                 </div>
 
                 {{-- Buttons --}}
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-submit" id="btnSubmit">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary btn-submit flex-grow-1" id="btnSubmit" style="min-height:48px;">
                         <span id="btnText"><i class="bi bi-send-fill me-2"></i>Gửi yêu cầu hỗ trợ</span>
                         <span id="btnSpinner" class="d-none">
                             <span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...
                         </span>
                     </button>
-                    <a href="{{ route('student.tickets.index') }}" class="btn btn-outline-secondary" style="border-radius:10px;">
+                    <a href="{{ route('student.tickets.index') }}" class="btn btn-outline-secondary d-flex align-items-center justify-content-center px-4" style="border-radius:10px; min-height:48px;">
                         Hủy
                     </a>
                 </div>
@@ -545,5 +561,85 @@
         document.getElementById('btnSpinner').classList.remove('d-none');
         document.getElementById('btnSubmit').disabled = true;
     });
+
+    // ── Smart Camera & Live Webcam Modal ──────────────────────────────
+    let webcamStream = null;
+
+    function startCameraOrWebcam() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile) {
+            document.getElementById('cameraCapture').click();
+            return;
+        }
+
+        // Mở Live Webcam xem trước trên PC/Laptop
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    webcamStream = stream;
+                    const video = document.getElementById('webcamVideo');
+                    video.srcObject = stream;
+                    const modal = new bootstrap.Modal(document.getElementById('webcamModal'));
+                    modal.show();
+                })
+                .catch(err => {
+                    console.warn("Webcam not allowed, fallback to camera file picker:", err);
+                    document.getElementById('cameraCapture').click();
+                });
+        } else {
+            document.getElementById('cameraCapture').click();
+        }
+    }
+
+    function stopWebcam() {
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+            webcamStream = null;
+        }
+    }
+
+    function takeWebcamSnapshot() {
+        const video = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('webcamCanvas');
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(blob => {
+            if (blob) {
+                const capturedFile = new File([blob], `webcam_photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                addFiles([capturedFile]);
+                stopWebcam();
+                bootstrap.Modal.getInstance(document.getElementById('webcamModal')).hide();
+            }
+        }, 'image/jpeg', 0.92);
+    }
 </script>
+
+{{-- ── WEBCAM LIVE MODAL (CHO PC LAPTOP) ── --}}
+<div class="modal fade" id="webcamModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+                <h5 class="modal-title h6 fw-bold mb-0">
+                    <i class="bi bi-camera-video-fill me-2 text-primary"></i>Chụp ảnh trực tiếp từ Webcam Máy tính
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="stopWebcam()"></button>
+            </div>
+            <div class="modal-body p-3 bg-black text-center position-relative overflow-hidden" style="border-radius:0 0 16px 16px;">
+                <video id="webcamVideo" autoplay playsinline style="width:100%; max-height:360px; border-radius:12px; object-fit:cover;"></video>
+                <canvas id="webcamCanvas" class="d-none"></canvas>
+                <div class="mt-3 d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm" onclick="takeWebcamSnapshot()">
+                        <i class="bi bi-camera-fill me-2"></i> Chụp ảnh ngay
+                    </button>
+                    <button type="button" class="btn btn-outline-light rounded-pill px-3 py-2" data-bs-dismiss="modal" onclick="stopWebcam()">
+                        Hủy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endpush

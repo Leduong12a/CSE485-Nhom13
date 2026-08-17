@@ -28,4 +28,13 @@ class TicketAttachment extends Model
     {
         return $this->belongsTo(TicketComment::class);
     }
+
+    public function getUrlAttribute(): string
+    {
+        if (str_starts_with($this->file_path, 'http://') || str_starts_with($this->file_path, 'https://')) {
+            return $this->file_path;
+        }
+
+        return asset('storage/' . $this->file_path);
+    }
 }

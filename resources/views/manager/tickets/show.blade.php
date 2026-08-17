@@ -83,12 +83,12 @@
                         <div class="d-flex flex-wrap gap-2">
                             @foreach ($ticket->attachments as $att)
                                 @if (str_starts_with($att->file_type ?? '', 'image/'))
-                                    <img src="{{ asset('storage/' . $att->file_path) }}"
+                                    <img src="{{ $att->url }}"
                                          alt="Ảnh minh chứng"
                                          style="width:80px; height:80px; border-radius:8px; object-fit:cover; border:1px solid #e2e8f0; cursor:pointer;"
                                          onclick="window.open(this.src)">
                                 @else
-                                    <a href="{{ asset('storage/' . $att->file_path) }}" target="_blank"
+                                    <a href="{{ $att->url }}" target="_blank"
                                        class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 rounded-2">
                                         <i class="bi bi-paperclip"></i> {{ basename($att->file_path) }}
                                     </a>

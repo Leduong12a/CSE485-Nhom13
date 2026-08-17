@@ -143,7 +143,7 @@
                             @if ($c->attachments->isNotEmpty())
                                 <div class="d-flex flex-wrap gap-1 mt-1 {{ $isMe ? 'justify-content-end' : '' }}">
                                     @foreach ($c->attachments as $att)
-                                        <a href="{{ asset('storage/' . $att->file_path) }}" target="_blank"
+                                        <a href="{{ $att->url }}" target="_blank"
                                            class="btn btn-sm btn-light border py-0 px-2 text-truncate" style="font-size:0.7rem; max-width:140px;">
                                             <i class="bi bi-paperclip me-1"></i>{{ basename($att->file_path) }}
                                         </a>
@@ -171,12 +171,18 @@
                     <div class="d-flex flex-column gap-2">
                         <textarea name="content" rows="2" class="form-control rounded-3" placeholder="Nhập tin nhắn hướng dẫn/trao đổi..." style="font-size:0.85rem; resize:none;" required></textarea>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <label class="btn btn-sm btn-outline-secondary rounded-2 py-1 px-2" style="font-size:0.78rem; cursor:pointer;">
-                                <i class="bi bi-paperclip"></i> Đính kèm
-                                <input type="file" name="attachments[]" multiple class="d-none">
-                            </label>
-                            <button type="submit" class="btn btn-sm btn-success fw-bold rounded-2 px-3" style="font-size:0.83rem;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="d-flex gap-1">
+                                <label class="btn btn-sm btn-outline-primary rounded-2 py-1 px-2 fw-bold" style="font-size:0.78rem; cursor:pointer;">
+                                    <i class="bi bi-camera-fill"></i> Chụp ảnh
+                                    <input type="file" name="attachments[]" accept="image/*" capture="environment" class="d-none">
+                                </label>
+                                <label class="btn btn-sm btn-outline-secondary rounded-2 py-1 px-2" style="font-size:0.78rem; cursor:pointer;">
+                                    <i class="bi bi-paperclip"></i> Đính kèm
+                                    <input type="file" name="attachments[]" multiple class="d-none">
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary fw-bold rounded-2 px-3" style="font-size:0.83rem;">
                                 <i class="bi bi-send-fill me-1"></i> Gửi tin nhắn
                             </button>
                         </div>

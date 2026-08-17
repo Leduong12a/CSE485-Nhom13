@@ -99,7 +99,7 @@ class TicketController extends Controller
         // Upload ảnh đính kèm
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-                $path = $file->store('attachments', 'public');
+                $path = \App\Services\CloudinaryService::upload($file) ?? $file->store('attachments', 'public');
                 TicketAttachment::create([
                     'ticket_id'  => $ticket->id,
                     'comment_id' => null,
@@ -156,7 +156,7 @@ class TicketController extends Controller
         // Upload ảnh đính kèm trong chat
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-                $path = $file->store('attachments', 'public');
+                $path = \App\Services\CloudinaryService::upload($file) ?? $file->store('attachments', 'public');
                 TicketAttachment::create([
                     'ticket_id'  => $ticket->id,
                     'comment_id' => $comment->id,
