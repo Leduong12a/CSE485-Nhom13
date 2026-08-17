@@ -3,48 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="@yield('meta_description', 'Phân hệ Quản trị & Trưởng bộ phận - TLU Helpdesk')">
-    <title>@yield('title', 'Quản trị') — TLU Helpdesk Manager</title>
+    <meta name="description" content="@yield('meta_description', 'TLU Helpdesk - Workspace Quản trị viên & Trưởng bộ phận')">
+    <title>@yield('title', 'Quản trị viên') — TLU Helpdesk Manager</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <style>
         * { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
 
         :root {
             --mgr-primary:    #0d6efd;
+            --mgr-primary-dark:#0a58ca;
             --mgr-dark:       #0f172a;
             --mgr-sidebar-bg: #1e293b;
-            --mgr-sidebar-w:  250px;
             --mgr-bg:         #f8fafc;
+            --mgr-sidebar-w:  270px;
         }
 
         body {
             background: var(--mgr-bg);
             min-height: 100vh;
             display: flex;
+            color: #1e293b;
         }
 
-        /* ─── SIDEBAR ────────────────────────────────────────── */
+        /* ─── SIDEBAR DESIGN (ROYAL MANAGER THEME) ───────────── */
         .mgr-sidebar {
             width: var(--mgr-sidebar-w);
-            background: var(--mgr-sidebar-bg);
-            color: #94a3b8;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
             z-index: 1040;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease;
         }
 
         .mgr-sidebar .brand-header {
@@ -53,83 +54,91 @@
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            background: rgba(0,0,0,0.15);
+            background: rgba(0,0,0,0.2);
         }
 
         .mgr-sidebar .brand-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
-            border-radius: 10px;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.3rem;
-            box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+            font-size: 1.35rem;
+            box-shadow: 0 4px 14px rgba(13,110,253,0.4);
         }
 
         .mgr-sidebar .brand-title {
-            font-weight: 700;
-            font-size: 1.05rem;
+            font-weight: 800;
+            font-size: 1.1rem;
             color: white;
             line-height: 1.2;
+            letter-spacing: -0.02em;
         }
 
         .mgr-sidebar .role-badge {
             font-size: 0.68rem;
-            background: rgba(13,110,253,0.25);
+            background: linear-gradient(135deg, rgba(13,110,253,0.3) 0%, rgba(2,132,199,0.3) 100%);
             color: #60a5fa;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(96,165,250,0.2);
         }
 
         .sidebar-menu {
-            padding: 1rem 0.75rem;
+            padding: 1.25rem 0.85rem;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             flex-grow: 1;
         }
 
         .sidebar-heading {
             font-size: 0.68rem;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            text-uppercase;
+            letter-spacing: 0.1em;
             color: #64748b;
-            padding: 0.5rem 0.75rem 0.25rem;
+            padding: 0.75rem 0.75rem 0.35rem;
         }
 
         .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 0.65rem 0.85rem;
-            border-radius: 10px;
-            color: #cbd5e1;
+            gap: 12px;
+            padding: 0.7rem 0.95rem;
+            border-radius: 12px;
+            color: #94a3b8;
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
-            transition: background 0.15s, color 0.15s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .sidebar-item i { font-size: 1.1rem; color: #94a3b8; transition: color 0.15s; }
+        .sidebar-item i {
+            font-size: 1.15rem;
+            color: #64748b;
+            transition: color 0.2s;
+        }
 
         .sidebar-item:hover {
-            background: rgba(255,255,255,0.06);
-            color: white;
+            background: rgba(255,255,255,0.07);
+            color: #f8fafc;
+            transform: translateX(3px);
         }
 
         .sidebar-item:hover i { color: #60a5fa; }
 
         .sidebar-item.active {
-            background: var(--mgr-primary);
+            background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);
             color: white;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+            box-shadow: 0 4px 16px rgba(13,110,253,0.35);
         }
 
         .sidebar-item.active i { color: white; }
@@ -143,69 +152,71 @@
             min-width: 0;
         }
 
-        /* ─── TOPBAR ─────────────────────────────────────────── */
+        /* ─── TOPBAR DESIGN ──────────────────────────────────── */
         .mgr-topbar {
-            height: 64px;
+            height: 68px;
             background: white;
             border-bottom: 1px solid #e2e8f0;
-            padding: 0 1.5rem;
+            padding: 0 1.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 1020;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .topbar-toggle {
+            background: transparent;
             border: none;
-            background: none;
-            font-size: 1.3rem;
-            color: #64748b;
+            font-size: 1.5rem;
+            color: #475569;
             cursor: pointer;
-            padding: 0.2rem 0.5rem;
-            border-radius: 6px;
+            padding: 0;
         }
-
-        .topbar-toggle:hover { background: #f1f5f9; }
 
         .user-dropdown .dropdown-toggle {
-            border: none;
             background: #f8fafc;
-            border-radius: 10px;
-            padding: 0.4rem 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.4rem 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: #1e293b;
-            font-size: 0.85rem;
-            font-weight: 600;
+            gap: 10px;
             cursor: pointer;
-            transition: background 0.15s;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.15s;
         }
 
-        .user-dropdown .dropdown-toggle:hover { background: #f1f5f9; }
+        .user-dropdown .dropdown-toggle:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
 
         .user-avatar-mgr {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #0d6efd, #004085);
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(13,110,253,0.25);
         }
 
         /* ─── MAIN CONTENT CONTAINER ─────────────────────────── */
         .mgr-content {
-            padding: 1.75rem 1.5rem;
+            padding: 1.75rem 1.75rem;
             flex-grow: 1;
         }
 
-        /* ─── BADGES & CARDS ─────────────────────────────────── */
+        /* ─── CARDS & BADGES ─────────────────────────────────── */
         .card {
             border: none;
             border-radius: 16px;
@@ -213,19 +224,23 @@
         }
 
         .badge-status {
-            font-size: 0.72rem;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 8px;
             font-weight: 600;
-            padding: 0.3em 0.7em;
-            border-radius: 6px;
         }
 
-        .badge-OPEN       { background: #e0f2fe; color: #0369a1; }
-        .badge-IN_PROGRESS{ background: #fef9c3; color: #92400e; }
-        .badge-RESOLVED   { background: #dcfce7; color: #166534; }
-        .badge-CLOSED     { background: #f3f4f6; color: #374151; }
-        .badge-REOPENED   { background: #fce7f3; color: #9d174d; }
+        .badge-OPEN        { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-IN_PROGRESS { background: #fefce8; color: #a16207; border: 1px solid #fef08a; }
+        .badge-RESOLVED    { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .badge-CLOSED      { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+        .badge-REOPENED    { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 
-        @media (max-width: 992px) {
+        .badge-priority-HIGH   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .badge-priority-MEDIUM { background: #fefce8; color: #a16207; border: 1px solid #fef08a; }
+        .badge-priority-LOW    { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+        @media (max-width: 991.98px) {
             .mgr-sidebar { transform: translateX(-100%); }
             .mgr-sidebar.show { transform: translateX(0); }
             .mgr-wrapper { margin-left: 0; }
@@ -248,13 +263,13 @@
         </div>
 
         <nav class="sidebar-menu">
-            <div class="sidebar-heading">Tổng quan</div>
+            <div class="sidebar-heading">Tổng quan Hệ thống</div>
             <a href="{{ route('manager.dashboard') }}" class="sidebar-item {{ request()->routeIs('manager.dashboard') ? 'active' : '' }}">
-                <i class="bi bi-pie-chart-fill"></i>
+                <i class="bi bi-grid-1x2-fill"></i>
                 <span>Analytics Dashboard</span>
             </a>
 
-            <div class="sidebar-heading mt-2">Quản lý Sự cố</div>
+            <div class="sidebar-heading mt-2">Điều hành Sự cố</div>
             <a href="{{ route('manager.tickets.index') }}" class="sidebar-item {{ request()->routeIs('manager.tickets.*') ? 'active' : '' }}">
                 <i class="bi bi-ticket-detailed-fill"></i>
                 <span>Quản lý Ticket toàn trường</span>
@@ -270,7 +285,7 @@
                 <span>Báo cáo Vi phạm SLA</span>
             </a>
             <a href="{{ route('manager.profile.index') }}" class="sidebar-item {{ request()->routeIs('manager.profile.*') ? 'active' : '' }}">
-                <i class="bi bi-person-badge-fill text-primary"></i>
+                <i class="bi bi-person-badge-fill"></i>
                 <span>Hồ sơ Quản trị viên</span>
             </a>
         </nav>
@@ -289,12 +304,16 @@
                 <button class="topbar-toggle d-lg-none" onclick="document.getElementById('mgrSidebar').classList.toggle('show')">
                     <i class="bi bi-list"></i>
                 </button>
-                <span class="fw-600 text-secondary" style="font-size:0.875rem;">
-                    <i class="bi bi-building me-1"></i> Trung tâm CNTT &amp; CSVC TLU
+                <span class="fw-bold text-dark d-flex align-items-center gap-2" style="font-size:0.95rem;">
+                    <i class="bi bi-building text-primary fs-5"></i> Trung tâm CNTT &amp; CSVC TLU
                 </span>
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <a href="{{ route('manager.reports.sla') }}" class="btn btn-sm btn-light border fw-bold text-danger d-none d-md-flex align-items-center gap-1 rounded-3" style="font-size:0.8rem;">
+                    <i class="bi bi-alarm-fill"></i> Báo cáo SLA
+                </a>
+
                 {{-- User profile dropdown --}}
                 <div class="dropdown user-dropdown">
                     <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -302,24 +321,24 @@
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                         </div>
                         <span class="d-none d-sm-inline">{{ Auth::user()->name }}</span>
-                        <i class="bi bi-chevron-down ms-1" style="font-size:0.65rem;"></i>
+                        <i class="bi bi-chevron-down ms-1 text-muted" style="font-size:0.65rem;"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2" style="min-width: 210px;">
                         <li>
-                            <div class="px-3 py-2 border-bottom">
-                                <div class="fw-bold" style="font-size:0.85rem;">{{ Auth::user()->name }}</div>
+                            <div class="px-3 py-2 border-bottom mb-1">
+                                <div class="fw-bold" style="font-size:0.85rem; color:#1e293b;">{{ Auth::user()->name }}</div>
                                 <div class="text-muted" style="font-size:0.75rem;">{{ Auth::user()->email }}</div>
                             </div>
                         </li>
                         <li>
-                            <a href="{{ route('manager.profile.index') }}" class="dropdown-item py-2" style="font-size:0.85rem;">
-                                <i class="bi bi-person me-2"></i> Hồ sơ Quản trị viên
+                            <a href="{{ route('manager.profile.index') }}" class="dropdown-item py-2 rounded-2" style="font-size:0.85rem;">
+                                <i class="bi bi-person me-2 text-primary"></i> Hồ sơ Quản trị viên
                             </a>
                         </li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="dropdown-item text-danger pt-2">
+                                <button type="submit" class="dropdown-item text-danger py-2 rounded-2" style="font-size:0.85rem;">
                                     <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
                                 </button>
                             </form>
@@ -332,21 +351,28 @@
         {{-- MAIN CONTENT --}}
         <main class="mgr-content">
             @if (session('success'))
-                <div class="alert alert-success border-0 shadow-sm rounded-3 d-flex align-items-center gap-2 mb-4">
-                    <i class="bi bi-check-circle-fill flex-shrink-0"></i>
-                    <span>{{ session('success') }}</span>
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <div>{{ session('success') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="alert alert-danger border-0 shadow-sm rounded-3 d-flex align-items-center gap-2 mb-4">
-                    <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
-                    <span>{{ session('error') }}</span>
+                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <div>{{ session('error') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             @endif
 
             @yield('content')
         </main>
+
+        {{-- FOOTER --}}
+        <footer class="bg-white border-top py-3 text-center text-muted" style="font-size: 0.8rem;">
+            &copy; {{ date('Y') }} Đại học Thủy Lợi — Phân hệ Quản trị &amp; Điều hành IT Helpdesk
+        </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

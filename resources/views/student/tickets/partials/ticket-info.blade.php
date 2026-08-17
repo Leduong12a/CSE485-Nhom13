@@ -7,9 +7,9 @@
         <div class="d-flex gap-2">
             <span class="badge badge-status badge-priority-{{ $ticket->priority }}" style="font-size:0.72rem;">
                 @switch($ticket->priority)
-                    @case('HIGH')   🔴 Ưu tiên Cao      @break
-                    @case('MEDIUM') 🟡 Ưu tiên Trung bình @break
-                    @case('LOW')    🟢 Ưu tiên Thấp     @break
+                    @case('HIGH')   <i class="bi bi-exclamation-circle-fill me-1"></i> Ưu tiên Cao      @break
+                    @case('MEDIUM') <i class="bi bi-dash-circle-fill me-1"></i> Ưu tiên Trung bình @break
+                    @case('LOW')    <i class="bi bi-arrow-down-circle-fill me-1"></i> Ưu tiên Thấp     @break
                 @endswitch
             </span>
         </div>

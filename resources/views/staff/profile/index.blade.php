@@ -133,9 +133,9 @@
                 <div class="col-md-6">
                     <label class="form-label fw-bold style-085" style="font-size:0.85rem;">Ca trực cố định <span class="text-danger">*</span></label>
                     <select name="shift" class="form-select rounded-3">
-                        <option value="Ca Sáng (07:00 - 11:30)" {{ old('shift', $profile->shift) === 'Ca Sáng (07:00 - 11:30)' ? 'selected' : '' }}>🌅 Ca Sáng (07:00 - 11:30)</option>
-                        <option value="Ca Chiều (13:00 - 17:30)" {{ old('shift', $profile->shift) === 'Ca Chiều (13:00 - 17:30)' ? 'selected' : '' }}>☀️ Ca Chiều (13:00 - 17:30)</option>
-                        <option value="Ca Tối / Hành chính" {{ old('shift', $profile->shift) === 'Ca Tối / Hành chính' ? 'selected' : '' }}>🌙 Ca Tối / Hành chính</option>
+                        <option value="Ca Sáng (07:00 - 11:30)" {{ old('shift', $profile->shift) === 'Ca Sáng (07:00 - 11:30)' ? 'selected' : '' }}>Ca Sáng (07:00 - 11:30)</option>
+                        <option value="Ca Chiều (13:00 - 17:30)" {{ old('shift', $profile->shift) === 'Ca Chiều (13:00 - 17:30)' ? 'selected' : '' }}>Ca Chiều (13:00 - 17:30)</option>
+                        <option value="Ca Tối / Hành chính" {{ old('shift', $profile->shift) === 'Ca Tối / Hành chính' ? 'selected' : '' }}>Ca Tối / Hành chính</option>
                     </select>
                 </div>
             </div>

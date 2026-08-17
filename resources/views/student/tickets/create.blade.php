@@ -360,15 +360,15 @@
                     <div class="priority-group">
                         <label class="priority-radio">
                             <input type="radio" name="priority" value="LOW" {{ old('priority', 'MEDIUM') === 'LOW' ? 'checked' : '' }}>
-                            <span class="priority-label low">🟢 Thấp</span>
+                            <span class="priority-label low"><i class="bi bi-arrow-down-circle-fill me-1"></i> Thấp</span>
                         </label>
                         <label class="priority-radio">
                             <input type="radio" name="priority" value="MEDIUM" {{ old('priority', 'MEDIUM') === 'MEDIUM' ? 'checked' : '' }}>
-                            <span class="priority-label medium">🟡 Trung bình</span>
+                            <span class="priority-label medium"><i class="bi bi-dash-circle-fill me-1"></i> Trung bình</span>
                         </label>
                         <label class="priority-radio">
                             <input type="radio" name="priority" value="HIGH" {{ old('priority', 'MEDIUM') === 'HIGH' ? 'checked' : '' }}>
-                            <span class="priority-label high">🔴 Cao</span>
+                            <span class="priority-label high"><i class="bi bi-exclamation-circle-fill me-1"></i> Khẩn cấp</span>
                         </label>
                     </div>
                     @error('priority')
@@ -424,22 +424,22 @@
             <div class="info-card-body">
 
                 <div class="process-step">
-                    <div class="step-icon" style="background:#eff6ff;">📨</div>
+                    <div class="step-icon" style="background:#eff6ff;"><i class="bi bi-send-fill text-primary"></i></div>
                     <p><strong>Bước 1: Gửi phiếu sự cố</strong>Mô tả chi tiết và đính kèm ảnh minh chứng giúp đẩy nhanh tốc độ xử lý.</p>
                 </div>
 
                 <div class="process-step">
-                    <div class="step-icon" style="background:#f0fdf4;">✅</div>
+                    <div class="step-icon" style="background:#f0fdf4;"><i class="bi bi-person-check-fill text-success"></i></div>
                     <p><strong>Bước 2: Tiếp nhận & phân công</strong>Quản lý tiếp nhận và phân công cho Kỹ thuật viên phù hợp.</p>
                 </div>
 
                 <div class="process-step">
-                    <div class="step-icon" style="background:#fffbeb;">🔧</div>
+                    <div class="step-icon" style="background:#fffbeb;"><i class="bi bi-tools text-warning"></i></div>
                     <p><strong>Bước 3: Xử lý sự cố</strong>KTV liên hệ và tiến hành khắc phục. Bạn có thể theo dõi và trao đổi trực tiếp qua ticket.</p>
                 </div>
 
                 <div class="process-step mb-3">
-                    <div class="step-icon" style="background:#fdf4ff;">⭐</div>
+                    <div class="step-icon" style="background:#fdf4ff;"><i class="bi bi-star-fill text-info"></i></div>
                     <p><strong>Bước 4: Đánh giá chất lượng</strong>Sau khi hoàn thành, hãy đánh giá 5 sao để cải thiện dịch vụ.</p>
                 </div>
 

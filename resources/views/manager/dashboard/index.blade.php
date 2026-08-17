@@ -7,49 +7,54 @@
     .kpi-card {
         background: white;
         border-radius: 16px;
-        padding: 1.25rem;
+        padding: 1.35rem;
         box-shadow: 0 1px 8px rgba(0,0,0,0.05);
         display: flex;
         align-items: center;
-        gap: 1rem;
-        transition: transform 0.15s, box-shadow 0.15s;
+        gap: 1.15rem;
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        border: 1px solid #f1f5f9;
     }
 
     .kpi-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
     .kpi-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        color: white;
         flex-shrink: 0;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     }
 
     .kpi-value {
-        font-size: 1.6rem;
-        font-weight: 700;
+        font-size: 1.7rem;
+        font-weight: 800;
         color: #0f172a;
         line-height: 1.1;
+        letter-spacing: -0.02em;
     }
 
     .kpi-label {
         font-size: 0.8rem;
         color: #64748b;
-        font-weight: 500;
-        margin-top: 2px;
+        font-weight: 600;
+        margin-top: 3px;
     }
 
     .chart-card {
         background: white;
         border-radius: 16px;
-        padding: 1.25rem;
+        padding: 1.35rem;
         box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
         height: 100%;
     }
 
@@ -57,13 +62,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .chart-card-header h3 {
         font-size: 0.95rem;
         font-weight: 700;
-        color: #1e293b;
+        color: #0f172a;
         margin: 0;
     }
 </style>
@@ -74,11 +81,11 @@
 {{-- Page Header --}}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 fw-bold text-slate-800 mb-0">Analytics Dashboard</h1>
+        <h1 class="h3 fw-bold text-dark mb-0">Analytics Dashboard</h1>
         <p class="text-muted mb-0" style="font-size:0.85rem;">Tổng quan chỉ số hoạt động &amp; Báo cáo chất lượng hỗ trợ kỹ thuật TLU</p>
     </div>
     <div class="d-flex gap-2">
-        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill" style="font-size:0.8rem;">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold" style="font-size:0.8rem;">
             <i class="bi bi-calendar3 me-1"></i> Tháng {{ date('m/Y') }}
         </span>
     </div>
@@ -90,7 +97,7 @@
     {{-- KPI 1: Tổng ticket trong tháng --}}
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-card">
-            <div class="kpi-icon" style="background:#eff6ff; color:#0d6efd;">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);">
                 <i class="bi bi-ticket-perforated-fill"></i>
             </div>
             <div>
@@ -103,7 +110,7 @@
     {{-- KPI 2: Tỷ lệ đúng SLA --}}
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-card">
-            <div class="kpi-icon" style="background:#f0fdf4; color:#16a34a;">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
                 <i class="bi bi-shield-check"></i>
             </div>
             <div>
@@ -116,7 +123,7 @@
     {{-- KPI 3: Ticket trễ hạn chưa xong --}}
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-card">
-            <div class="kpi-icon" style="background:#fff1f2; color:#be123c;">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);">
                 <i class="bi bi-alarm-fill"></i>
             </div>
             <div>
@@ -129,11 +136,11 @@
     {{-- KPI 4: Điểm hài lòng trung bình --}}
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-card">
-            <div class="kpi-icon" style="background:#fffbeb; color:#d97706;">
+            <div class="kpi-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                 <i class="bi bi-star-fill"></i>
             </div>
             <div>
-                <div class="kpi-value text-warning">{{ $avgRating }} <span style="font-size:1rem;">/ 5.0</span></div>
+                <div class="kpi-value text-warning">{{ $avgRating }} <span style="font-size:1rem;" class="text-muted fw-normal">/ 5.0</span></div>
                 <div class="kpi-label">Điểm hài lòng trung bình</div>
             </div>
         </div>
@@ -149,9 +156,9 @@
         <div class="chart-card">
             <div class="chart-card-header">
                 <h3><i class="bi bi-bar-chart-line-fill me-2 text-primary"></i>Số lượng sự cố theo Danh mục</h3>
-                <span class="text-muted" style="font-size:0.75rem;">Phân loại lỗi</span>
+                <span class="badge bg-light text-secondary border" style="font-size:0.75rem;">Phân loại lỗi</span>
             </div>
-            <div style="position:relative; height:280px;">
+            <div style="position:relative; height:290px;">
                 <canvas id="categoryChart"></canvas>
             </div>
         </div>
@@ -162,9 +169,9 @@
         <div class="chart-card">
             <div class="chart-card-header">
                 <h3><i class="bi bi-pie-chart-fill me-2 text-info"></i>Sự cố theo Khoa / Đơn vị</h3>
-                <span class="text-muted" style="font-size:0.75rem;">Nguồn phát sinh</span>
+                <span class="badge bg-light text-secondary border" style="font-size:0.75rem;">Nguồn phát sinh</span>
             </div>
-            <div style="position:relative; height:280px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:relative; height:290px; display:flex; align-items:center; justify-content:center;">
                 <canvas id="deptChart"></canvas>
             </div>
         </div>
@@ -173,10 +180,10 @@
 </div>
 
 {{-- ── 3. RECENT TICKETS TABLE ── --}}
-<div class="card">
-    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-        <h3 class="h6 fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Phiếu sự cố mới gửi gần đây</h3>
-        <a href="{{ route('manager.tickets.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" style="font-size:0.78rem;">
+<div class="card border-0 shadow-sm" style="border-radius:16px;">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 border-bottom-0">
+        <h3 class="h6 fw-bold mb-0" style="color:#0f172a;"><i class="bi bi-clock-history me-2 text-primary"></i>Phiếu sự cố mới gửi gần đây</h3>
+        <a href="{{ route('manager.tickets.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" style="font-size:0.78rem;">
             Xem tất cả <i class="bi bi-arrow-right"></i>
         </a>
     </div>
@@ -199,7 +206,7 @@
                     <td class="font-monospace text-muted fw-bold">#{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}</td>
                     <td class="fw-medium text-dark">{{ Str::limit($t->title, 40) }}</td>
                     <td>
-                        <div>{{ $t->requester->name }}</div>
+                        <div class="fw-bold">{{ $t->requester->name }}</div>
                         <small class="text-muted" style="font-size:0.72rem;">{{ $t->requester->department?->name ?? 'Sinh viên' }}</small>
                     </td>
                     <td><span class="badge bg-light text-dark border">{{ $t->category?->name ?? '—' }}</span></td>
@@ -207,29 +214,32 @@
                         @if ($t->currentAssignee)
                             <span class="text-success fw-medium"><i class="bi bi-person-check me-1"></i>{{ $t->currentAssignee->name }}</span>
                         @else
-                            <span class="text-warning"><i class="bi bi-hourglass me-1"></i>Chưa phân công</span>
+                            <span class="text-warning fw-medium"><i class="bi bi-hourglass me-1"></i>Chưa phân công</span>
                         @endif
                     </td>
                     <td>
                         <span class="badge badge-status badge-{{ $t->status }}">
                             @switch($t->status)
-                                @case('OPEN')        🔵 Mới gửi       @break
-                                @case('IN_PROGRESS') 🟡 Đang xử lý    @break
-                                @case('RESOLVED')    🟢 Đã khắc phục  @break
-                                @case('CLOSED')      ⚫ Đã đóng       @break
-                                @case('REOPENED')    🔴 Mở lại        @break
+                                @case('OPEN')        <i class="bi bi-record-circle-fill text-info me-1"></i>Mới gửi       @break
+                                @case('IN_PROGRESS') <i class="bi bi-clock-history text-warning me-1"></i>Đang xử lý    @break
+                                @case('RESOLVED')    <i class="bi bi-check-circle-fill text-success me-1"></i>Đã khắc phục  @break
+                                @case('CLOSED')      <i class="bi bi-lock-fill text-secondary me-1"></i>Đã đóng       @break
+                                @case('REOPENED')    <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i>Mở lại        @break
                             @endswitch
                         </span>
                     </td>
                     <td>
-                        <a href="{{ route('manager.tickets.show', $t->id) }}" class="btn btn-sm btn-outline-primary rounded-2">
-                            <i class="bi bi-eye"></i> Xem
+                        <a href="{{ route('manager.tickets.show', $t->id) }}" class="btn btn-sm btn-outline-primary rounded-2 fw-bold" style="font-size:0.78rem;">
+                            <i class="bi bi-eye me-1"></i>Xem
                         </a>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">Chưa có ticket nào.</td>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-check-circle display-4 text-success d-block mb-2"></i>
+                        <h5>Hiện tại chưa có ticket nào trong hệ thống.</h5>
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
@@ -250,7 +260,7 @@
             datasets: [{
                 label: 'Số lượng ticket',
                 data: @json($chartCategoryCounts),
-                backgroundColor: ['#0d6efd', '#0dcaf0', '#ffc107', '#198754', '#6f42c1', '#d63384'],
+                backgroundColor: ['#0d6efd', '#0284c7', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899'],
                 borderRadius: 8,
             }]
         },
@@ -270,8 +280,9 @@
             labels: @json($chartDeptLabels),
             datasets: [{
                 data: @json($chartDeptCounts),
-                backgroundColor: ['#0d6efd', '#20c997', '#ffc107', '#fd7e14', '#6610f2'],
-                borderWidth: 2,
+                backgroundColor: ['#0d6efd', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6'],
+                borderWidth: 3,
+                borderColor: '#ffffff'
             }]
         },
         options: {

@@ -80,7 +80,7 @@
     {{-- ── CỘT 1: CẦN XỬ LÝ (OPEN / REOPENED) ── --}}
     <div class="kanban-column">
         <div class="kanban-column-header">
-            <h3>🔵 Cần xử lý / Tiếp nhận</h3>
+            <h3><i class="bi bi-record-circle-fill text-info me-2"></i>Cần xử lý / Tiếp nhận</h3>
             <span class="badge bg-primary rounded-pill px-2.5 py-1">{{ $todoTickets->count() }}</span>
         </div>
 
@@ -90,9 +90,9 @@
                     <span class="font-monospace text-muted fw-bold" style="font-size:0.75rem;">#{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}</span>
                     <span class="badge badge-status badge-priority-{{ $t->priority }}">
                         @switch($t->priority)
-                            @case('HIGH')   🔴 Cao @break
-                            @case('MEDIUM') 🟡 Vừa @break
-                            @case('LOW')    🟢 Thấp @break
+                            @case('HIGH')   <i class="bi bi-exclamation-circle-fill me-1"></i>Cao @break
+                            @case('MEDIUM') <i class="bi bi-dash-circle-fill me-1"></i>Vừa @break
+                            @case('LOW')    <i class="bi bi-arrow-down-circle-fill me-1"></i>Thấp @break
                         @endswitch
                     </span>
                 </div>
@@ -113,14 +113,14 @@
                             @csrf
                             <input type="hidden" name="status" value="IN_PROGRESS">
                             <button type="submit" class="btn btn-sm btn-warning rounded-2 py-0 px-2 fw-bold" style="font-size:0.75rem;">
-                                ▶ Bắt đầu <i class="bi bi-arrow-right"></i>
+                                <i class="bi bi-play-fill me-1"></i>Bắt đầu <i class="bi bi-arrow-right"></i>
                             </button>
                         </form>
                     @else
                         <form method="POST" action="{{ route('staff.tickets.claim', $t->id) }}">
                             @csrf
                             <button type="submit" class="btn btn-sm btn-primary rounded-2 py-0 px-2 fw-bold" style="font-size:0.75rem;">
-                                ✋ Tự nhận
+                                <i class="bi bi-hand-index-thumb me-1"></i>Tự nhận
                             </button>
                         </form>
                     @endif
@@ -136,7 +136,7 @@
     {{-- ── CỘT 2: ĐANG XỬ LÝ (IN_PROGRESS) ── --}}
     <div class="kanban-column" style="background:#fefce8;">
         <div class="kanban-column-header" style="border-bottom-color:#fef08a;">
-            <h3 class="text-warning-emphasis">🟡 Đang khắc phục</h3>
+            <h3 class="text-warning-emphasis"><i class="bi bi-clock-history text-warning me-2"></i>Đang khắc phục</h3>
             <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1">{{ $inProgressTickets->count() }}</span>
         </div>
 
@@ -164,7 +164,7 @@
                         @csrf
                         <input type="hidden" name="status" value="RESOLVED">
                         <button type="submit" class="btn btn-sm btn-success rounded-2 py-0 px-2 fw-bold" style="font-size:0.75rem;">
-                            ✔ Khắc phục xong <i class="bi bi-arrow-right"></i>
+                            <i class="bi bi-check-circle-fill me-1"></i>Khắc phục xong <i class="bi bi-arrow-right"></i>
                         </button>
                     </form>
                 </div>
@@ -179,7 +179,7 @@
     {{-- ── CỘT 3: ĐÃ KHẮC PHỤC (RESOLVED / CLOSED) ── --}}
     <div class="kanban-column" style="background:#f0fdf4;">
         <div class="kanban-column-header" style="border-bottom-color:#bbf7d0;">
-            <h3 class="text-success-emphasis">🟢 Đã khắc phục / Đóng</h3>
+            <h3 class="text-success-emphasis"><i class="bi bi-check-circle-fill text-success me-2"></i>Đã khắc phục / Đóng</h3>
             <span class="badge bg-success rounded-pill px-2.5 py-1">{{ $doneTickets->count() }}</span>
         </div>
 

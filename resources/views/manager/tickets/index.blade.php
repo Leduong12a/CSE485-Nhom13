@@ -123,9 +123,9 @@
                     <td>
                         <span class="badge badge-status badge-priority-{{ $t->priority }}">
                             @switch($t->priority)
-                                @case('HIGH')   🔴 Cao      @break
-                                @case('MEDIUM') 🟡 Trung bình @break
-                                @case('LOW')    🟢 Thấp     @break
+                                @case('HIGH')   <i class="bi bi-exclamation-circle-fill me-1"></i> Cao      @break
+                                @case('MEDIUM') <i class="bi bi-dash-circle-fill me-1"></i> Trung bình @break
+                                @case('LOW')    <i class="bi bi-arrow-down-circle-fill me-1"></i> Thấp     @break
                             @endswitch
                         </span>
                     </td>
@@ -142,11 +142,11 @@
                     <td>
                         <span class="badge badge-status badge-{{ $t->status }}">
                             @switch($t->status)
-                                @case('OPEN')        🔵 Mới gửi       @break
-                                @case('IN_PROGRESS') 🟡 Đang xử lý    @break
-                                @case('RESOLVED')    🟢 Đã khắc phục  @break
-                                @case('CLOSED')      ⚫ Đã đóng       @break
-                                @case('REOPENED')    🔴 Mở lại        @break
+                                @case('OPEN')        <i class="bi bi-record-circle-fill text-info me-1"></i> Mới gửi       @break
+                                @case('IN_PROGRESS') <i class="bi bi-clock-history text-warning me-1"></i> Đang xử lý    @break
+                                @case('RESOLVED')    <i class="bi bi-check-circle-fill text-success me-1"></i> Đã khắc phục  @break
+                                @case('CLOSED')      <i class="bi bi-lock-fill text-secondary me-1"></i> Đã đóng       @break
+                                @case('REOPENED')    <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Mở lại        @break
                             @endswitch
                         </span>
                     </td>

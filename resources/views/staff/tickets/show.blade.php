@@ -51,9 +51,9 @@
                         <span class="text-muted">Mức ưu tiên:</span>
                         <span class="badge badge-status badge-priority-{{ $ticket->priority }} ms-1">
                             @switch($ticket->priority)
-                                @case('HIGH')   🔴 Cao      @break
-                                @case('MEDIUM') 🟡 Trung bình @break
-                                @case('LOW')    🟢 Thấp     @break
+                                @case('HIGH')   <i class="bi bi-exclamation-circle-fill me-1"></i> Cao      @break
+                                @case('MEDIUM') <i class="bi bi-dash-circle-fill me-1"></i> Trung bình @break
+                                @case('LOW')    <i class="bi bi-arrow-down-circle-fill me-1"></i> Thấp     @break
                             @endswitch
                         </span>
                     </div>

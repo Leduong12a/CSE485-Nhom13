@@ -18,11 +18,11 @@ $currentIdx  = $statusOrder[$ticket->status] ?? 0;
         <span><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Tiến độ xử lý</span>
         <span class="badge badge-status badge-{{ $ticket->status }}">
             @switch($ticket->status)
-                @case('OPEN')        🔵 Mới gửi       @break
-                @case('IN_PROGRESS') 🟡 Đang xử lý    @break
-                @case('RESOLVED')    🟢 Đã khắc phục  @break
-                @case('CLOSED')      ⚫ Đã đóng       @break
-                @case('REOPENED')    🔴 Mở lại        @break
+                @case('OPEN')        <i class="bi bi-record-circle-fill text-info me-1"></i> Mới gửi       @break
+                @case('IN_PROGRESS') <i class="bi bi-clock-history text-warning me-1"></i> Đang xử lý    @break
+                @case('RESOLVED')    <i class="bi bi-check-circle-fill text-success me-1"></i> Đã khắc phục  @break
+                @case('CLOSED')      <i class="bi bi-lock-fill text-secondary me-1"></i> Đã đóng       @break
+                @case('REOPENED')    <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Mở lại        @break
             @endswitch
         </span>
     </div>
