@@ -47,16 +47,23 @@ return new class extends Migration
             END;
         ');
 
-        // 3. Trigger update & reset timestamps (resolved_at, closed_at)
+        // 3. Trigger update & reset timestamps (resolved_at, closed_at) + recalculate sla_deadline on REOPENED
         DB::unprepared("
             DROP TRIGGER IF EXISTS `trg_tickets_update_timestamps_before_update`;
             CREATE TRIGGER `trg_tickets_update_timestamps_before_update`
             BEFORE UPDATE ON `tickets`
             FOR EACH ROW
             BEGIN
-                IF NEW.status = 'REOPENED' AND OLD.status IN ('RESOLVED', 'CLOSED') THEN
+                DECLARE category_sla INT;
+
+                IF NEW.status = 'REOPENED' AND OLD.status != 'REOPENED' THEN
+                    SELECT `sla_hours` INTO category_sla 
+                    FROM `ticket_categories` 
+                    WHERE `id` = NEW.category_id;
+
                     SET NEW.resolved_at = NULL;
                     SET NEW.closed_at = NULL;
+                    SET NEW.sla_deadline = DATE_ADD(CURRENT_TIMESTAMP, INTERVAL IFNULL(category_sla, 24) HOUR);
                 END IF;
 
                 IF NEW.status = 'RESOLVED' AND OLD.status != 'RESOLVED' THEN

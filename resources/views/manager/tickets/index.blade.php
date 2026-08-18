@@ -89,7 +89,6 @@
         <table class="table table-hover align-middle mb-0" style="font-size:0.875rem;">
             <thead class="table-light text-uppercase text-secondary" style="font-size:0.72rem;">
                 <tr>
-                    <th>Mã</th>
                     <th>Tiêu đề sự cố</th>
                     <th>Người báo</th>
                     <th>Danh mục</th>
@@ -106,7 +105,6 @@
                     $isOverdue = $t->sla_deadline && now()->greaterThan($t->sla_deadline) && ! in_array($t->status, ['RESOLVED', 'CLOSED']);
                 @endphp
                 <tr class="{{ $isOverdue ? 'table-danger' : '' }}">
-                    <td class="font-monospace text-muted fw-bold">#{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}</td>
                     <td style="max-width:240px;">
                         <a href="{{ route('manager.tickets.show', $t->id) }}" class="fw-bold text-dark text-decoration-none">
                             {{ Str::limit($t->title, 45) }}

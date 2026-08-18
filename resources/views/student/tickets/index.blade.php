@@ -230,7 +230,6 @@
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
-                    <th>Mã</th>
                     <th>Tiêu đề sự cố</th>
                     <th>Mức ưu tiên</th>
                     <th>Trạng thái</th>
@@ -241,7 +240,6 @@
             <tbody>
                 @foreach ($tickets as $ticket)
                 <tr onclick="window.location='{{ route('student.tickets.show', $ticket->id) }}'">
-                    <td><span class="ticket-id">#{{ str_pad($ticket->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                     <td class="ticket-title">
                         <a href="{{ route('student.tickets.show', $ticket->id) }}">{{ $ticket->title }}</a>
                         <span class="category-tag"><i class="bi bi-tag me-1"></i>{{ $ticket->category?->name ?? '—' }}</span>

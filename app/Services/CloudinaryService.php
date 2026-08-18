@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Log;
 
 class CloudinaryService
 {
-    /**
-     * Upload ảnh đính kèm lên Cloudinary và trả về URL CDN công khai (secure_url)
-     */
     public static function upload($file, string $folder = 'tlu_helpdesk_attachments'): ?string
     {
         $cloudName = env('CLOUDINARY_CLOUD_NAME', 'dj3mheysm');

@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * UC11: Trang Cấu hình Danh mục Sự cố & SLA
-     */
     public function index()
     {
         $categories = TicketCategory::withCount('tickets')
@@ -20,9 +17,6 @@ class CategoryController extends Controller
         return view('manager.categories.index', compact('categories'));
     }
 
-    /**
-     * Tạo mới Danh mục sự cố
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -42,9 +36,6 @@ class CategoryController extends Controller
             ->with('success', 'Đã tạo danh mục sự cố mới thành công!');
     }
 
-    /**
-     * Cập nhật Danh mục sự cố & Thời gian SLA
-     */
     public function update(Request $request, TicketCategory $category)
     {
         $validated = $request->validate([
@@ -59,9 +50,6 @@ class CategoryController extends Controller
             ->with('success', "Đã cập nhật danh mục '{$category->name}' thành công!");
     }
 
-    /**
-     * Xóa Danh mục sự cố
-     */
     public function destroy(TicketCategory $category)
     {
         if ($category->tickets()->exists()) {

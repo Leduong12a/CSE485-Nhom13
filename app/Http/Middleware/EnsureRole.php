@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EnsureRole
 {
-    /**
-     * Handle an incoming request.
-     * Usage: middleware('role:REQUESTER') or middleware('role:STAFF,MANAGER')
-     */
     public function handle(Request $request, Closure $next, string ...$roles): mixed
     {
         if (! Auth::check()) {

@@ -11,20 +11,15 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    /**
-     * Hiển thị trang Hồ sơ Quản trị viên (Manager Profile)
-     */
     public function index()
     {
         $user = Auth::user();
         $user->load('department');
 
-        // Thống kê dành cho Quản trị viên
         $totalSystemTickets = Ticket::count();
 
         $resolvedCount = Ticket::whereIn('status', ['RESOLVED', 'CLOSED'])->count();
 
-        // Tỷ lệ đúng SLA
         $onTimeCount = Ticket::whereIn('status', ['RESOLVED', 'CLOSED'])
             ->whereNotNull('resolved_at')
             ->whereNotNull('sla_deadline')
@@ -44,9 +39,6 @@ class ProfileController extends Controller
         ));
     }
 
-    /**
-     * Cập nhật thông tin Quản trị viên & Đổi mật khẩu
-     */
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -62,7 +54,6 @@ class ProfileController extends Controller
             'new_password.confirmed'    => 'Xác nhận mật khẩu mới không trùng khớp.',
         ]);
 
-        // Nếu có đổi mật khẩu
         if ($request->filled('new_password')) {
             if (! Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không chính xác.']);

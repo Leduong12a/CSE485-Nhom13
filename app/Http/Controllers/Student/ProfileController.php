@@ -11,9 +11,6 @@ use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
-    /**
-     * Hiển thị trang Hồ sơ Cá nhân của Sinh viên
-     */
     public function index()
     {
         $user = Auth::user();
@@ -21,11 +18,9 @@ class ProfileController extends Controller
 
         $departments = Department::orderBy('name')->get();
 
-        // Trích xuất Mã Sinh Viên từ email (VD: 2351061234@e.tlu.edu.vn -> 2351061234)
         $username = explode('@', $user->email)[0];
         $studentCode = preg_match('/^\d+$/', $username) ? $username : '—';
 
-        // Thống kê cá nhân
         $totalSubmitted = $user->requestedTickets()->count();
         $totalResolved  = $user->requestedTickets()->whereIn('status', ['RESOLVED', 'CLOSED'])->count();
         $totalSurveys   = $user->requestedTickets()->has('satisfactionSurvey')->count();
@@ -40,9 +35,6 @@ class ProfileController extends Controller
         ));
     }
 
-    /**
-     * Cập nhật Thông tin cá nhân (Họ tên & Khoa)
-     */
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -61,14 +53,10 @@ class ProfileController extends Controller
             ->with('success', 'Đã cập nhật thông tin hồ sơ cá nhân thành công!');
     }
 
-    /**
-     * Đổi / Thiết lập mật khẩu cá nhân
-     */
     public function changePassword(Request $request)
     {
         $user = Auth::user();
 
-        // Rules validation: nếu nhập current_password thì kiểm tra, nếu không thì bỏ qua để sinh viên tạo MK lần đầu
         $rules = [
             'password' => ['required', 'confirmed', Password::defaults()],
         ];

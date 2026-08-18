@@ -12,12 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    /**
-     * UC14: Trang Analytics Dashboard & Thống kê KPIs
-     */
     public function index(Request $request)
     {
-        $filterType    = $request->get('filter_type', 'month'); // 'month' hoặc 'date'
+        $filterType    = $request->get('filter_type', 'month');
         $selectedMonth = $request->get('month', date('Y-m'));
         $selectedDate  = $request->get('date', date('Y-m-d'));
 
@@ -44,10 +41,8 @@ class DashboardController extends Controller
 
         $now = now();
 
-        // 1. Top KPI Stat Cards theo khoảng thời gian được lọc
         $totalTicketsMonth = Ticket::whereBetween('created_at', [$startRange, $endRange])->count();
 
-        // Tỷ lệ hoàn thành đúng SLA (%) trong khoảng lọc
         $ticketsInRange = Ticket::whereBetween('created_at', [$startRange, $endRange])->get();
         $totalInRange   = $ticketsInRange->count();
 
@@ -70,22 +65,20 @@ class DashboardController extends Controller
             $slaRate = 100.0;
         }
 
-        // Ticket quá hạn chưa xong
         $overdueCount = Ticket::whereNotIn('status', ['RESOLVED', 'CLOSED'])
             ->where('sla_deadline', '<', $now)
             ->count();
 
-        // Điểm hài lòng trung bình (⭐)
-        $avgRating = round(SatisfactionSurvey::avg('rating_stars') ?? 5.0, 1);
+        $avgRating = SatisfactionSurvey::avg('rating_stars') !== null
+            ? round(SatisfactionSurvey::avg('rating_stars'), 1)
+            : null;
 
-        // 2. Dữ liệu cho Biểu đồ Thống kê theo Danh mục (Bar Chart)
         $categoriesData = TicketCategory::withCount(['tickets' => function ($q) use ($startRange, $endRange) {
             $q->whereBetween('created_at', [$startRange, $endRange]);
         }])->get();
         $chartCategoryLabels = $categoriesData->pluck('name')->toArray();
         $chartCategoryCounts = $categoriesData->pluck('tickets_count')->toArray();
 
-        // 3. Dữ liệu cho Biểu đồ Thống kê theo Khoa/Phòng ban (Doughnut Chart)
         $deptData = Department::select('departments.name', DB::raw('count(tickets.id) as ticket_count'))
             ->leftJoin('users', 'users.department_id', '=', 'departments.id')
             ->leftJoin('tickets', function ($join) use ($startRange, $endRange) {
@@ -98,7 +91,6 @@ class DashboardController extends Controller
         $chartDeptLabels = $deptData->pluck('name')->toArray();
         $chartDeptCounts = $deptData->pluck('ticket_count')->toArray();
 
-        // Ticket mới gửi gần đây
         $recentTickets = Ticket::with(['category', 'requester', 'currentAssignee'])
             ->latest()
             ->take(5)

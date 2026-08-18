@@ -14,30 +14,23 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
-    /**
-     * UC10: Quản lý danh sách Ticket toàn trường
-     */
     public function index(Request $request)
     {
         $query = Ticket::with(['category', 'requester.department', 'currentAssignee'])
             ->latest();
 
-        // Lọc theo trạng thái
         if ($request->filled('status') && $request->status !== 'ALL') {
             $query->where('status', $request->status);
         }
 
-        // Lọc theo mức ưu tiên
         if ($request->filled('priority') && $request->priority !== 'ALL') {
             $query->where('priority', $request->priority);
         }
 
-        // Lọc theo danh mục
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        // Tìm kiếm
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -53,9 +46,6 @@ class TicketController extends Controller
         return view('manager.tickets.index', compact('tickets', 'categories', 'staffMembers'));
     }
 
-    /**
-     * Chi tiết Ticket từ góc nhìn Quản lý
-     */
     public function show(Ticket $ticket)
     {
         $ticket->load([
@@ -70,7 +60,6 @@ class TicketController extends Controller
             'satisfactionSurvey',
         ]);
 
-        // Danh sách KTV khả dụng kèm thông tin ca trực và số ticket đang phụ trách
         $staffMembers = User::where('role', 'STAFF')
             ->where('is_active', true)
             ->with(['staffProfile', 'assignedTickets' => function ($q) {
@@ -81,9 +70,6 @@ class TicketController extends Controller
         return view('manager.tickets.show', compact('ticket', 'staffMembers'));
     }
 
-    /**
-     * UC10, UC12: Phân công / Đổi Kỹ thuật viên phụ trách
-     */
     public function assign(Request $request, Ticket $ticket)
     {
         $request->validate([
@@ -102,10 +88,8 @@ class TicketController extends Controller
         $staff = User::where('id', $request->staff_id)->where('role', 'STAFF')->firstOrFail();
         $oldAssigneeId = $ticket->current_assignee_id;
 
-        // Cập nhật current_assignee_id
         $ticket->current_assignee_id = $staff->id;
 
-        // Nếu ticket đang OPEN, tự động chuyển sang IN_PROGRESS khi phân công
         $oldStatus = $ticket->status;
         if ($ticket->status === 'OPEN') {
             $ticket->status = 'IN_PROGRESS';
@@ -113,7 +97,6 @@ class TicketController extends Controller
 
         $ticket->save();
 
-        // Ghi lại lịch sử phân công (ticket_assignments)
         TicketAssignment::create([
             'ticket_id'            => $ticket->id,
             'assigned_to_staff_id' => $staff->id,
@@ -122,7 +105,6 @@ class TicketController extends Controller
             'assigned_at'          => now(),
         ]);
 
-        // Ghi log nếu trạng thái thay đổi
         if ($oldStatus !== $ticket->status) {
             TicketStatusLog::create([
                 'ticket_id'          => $ticket->id,

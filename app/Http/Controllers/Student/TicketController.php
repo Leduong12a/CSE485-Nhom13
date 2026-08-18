@@ -11,25 +11,19 @@ use App\Models\TicketStatusLog;
 use App\Models\SatisfactionSurvey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
-    /**
-     * UC03: Danh sách Ticket cá nhân của Sinh viên
-     */
     public function index(Request $request)
     {
         $query = Ticket::with(['category'])
             ->where('requester_id', Auth::id())
             ->latest();
 
-        // Lọc theo trạng thái
         if ($request->filled('status') && $request->status !== 'ALL') {
             $query->where('status', $request->status);
         }
 
-        // Tìm kiếm theo tiêu đề hoặc mã ticket
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -43,18 +37,12 @@ class TicketController extends Controller
         return view('student.tickets.index', compact('tickets'));
     }
 
-    /**
-     * UC02: Form tạo Ticket mới
-     */
     public function create()
     {
         $categories = TicketCategory::orderBy('name')->get();
         return view('student.tickets.create', compact('categories'));
     }
 
-    /**
-     * UC02: Lưu Ticket mới vào CSDL
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -88,7 +76,6 @@ class TicketController extends Controller
             'sla_deadline' => now()->addHours($category->sla_hours),
         ]);
 
-        // Ghi log trạng thái ban đầu
         TicketStatusLog::create([
             'ticket_id'         => $ticket->id,
             'changed_by_user_id' => Auth::id(),
@@ -96,7 +83,6 @@ class TicketController extends Controller
             'new_status'        => 'OPEN',
         ]);
 
-        // Upload ảnh đính kèm
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = \App\Services\CloudinaryService::upload($file) ?? $file->store('attachments', 'public');
@@ -113,12 +99,8 @@ class TicketController extends Controller
             ->with('success', 'Yêu cầu hỗ trợ của bạn đã được gửi thành công! Chúng tôi sẽ phản hồi sớm nhất có thể.');
     }
 
-    /**
-     * UC04: Chi tiết Ticket
-     */
     public function show(Ticket $ticket)
     {
-        // Chỉ sinh viên tạo ticket mới được xem
         abort_if($ticket->requester_id !== Auth::id(), 403, 'Bạn không có quyền xem phiếu này.');
 
         $ticket->load([
@@ -134,9 +116,6 @@ class TicketController extends Controller
         return view('student.tickets.show', compact('ticket'));
     }
 
-    /**
-     * UC04: Gửi bình luận/chat trong Ticket
-     */
     public function addComment(Request $request, Ticket $ticket)
     {
         abort_if($ticket->requester_id !== Auth::id(), 403);
@@ -158,7 +137,6 @@ class TicketController extends Controller
             'content'   => $request->content,
         ]);
 
-        // Upload ảnh đính kèm trong chat
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = \App\Services\CloudinaryService::upload($file) ?? $file->store('attachments', 'public');
@@ -175,15 +153,11 @@ class TicketController extends Controller
             ->with('success', 'Tin nhắn đã được gửi.');
     }
 
-    /**
-     * UC05: Mở lại Ticket (Reopen)
-     */
     public function reopen(Request $request, Ticket $ticket)
     {
         abort_if($ticket->requester_id !== Auth::id(), 403);
         abort_unless(in_array($ticket->status, ['RESOLVED', 'CLOSED']), 403, 'Chỉ được mở lại ticket đã xử lý xong.');
 
-        // Rào chắn bảo mật: Chỉ cho phép mở lại trong vòng 2 giờ kể từ mốc đóng/khắc phục
         $closedTime = $ticket->closed_at ?? $ticket->resolved_at ?? $ticket->updated_at;
         if ($closedTime && $closedTime->diffInMinutes(now()) > 120) {
             return redirect()->back()
@@ -198,21 +172,20 @@ class TicketController extends Controller
         ]);
 
         $oldStatus = $ticket->status;
-        $slaHours  = $ticket->category ? ($ticket->category->sla_hours ?? 2) : 2;
 
         $ticket->update([
-            'status'       => 'REOPENED',
-            'sla_deadline' => now()->addHours($slaHours),
+            'status' => 'REOPENED',
         ]);
 
-        // Ghi comment lý do mở lại
+        // Xóa đánh giá cũ (nếu có) để sinh viên có thể đánh giá lại sau khi sự cố được xử lý lần 2
+        $ticket->satisfactionSurvey()->delete();
+
         TicketComment::create([
             'ticket_id' => $ticket->id,
             'user_id'   => Auth::id(),
             'content'   => '⚠️ **Yêu cầu mở lại sự cố:** ' . $request->reason,
         ]);
 
-        // Ghi log
         TicketStatusLog::create([
             'ticket_id'          => $ticket->id,
             'changed_by_user_id' => Auth::id(),
@@ -224,9 +197,6 @@ class TicketController extends Controller
             ->with('success', 'Sự cố đã được mở lại. Chúng tôi sẽ tiếp tục hỗ trợ bạn.');
     }
 
-    /**
-     * UC05: Gửi đánh giá 5 sao (Satisfaction Survey)
-     */
     public function survey(Request $request, Ticket $ticket)
     {
         abort_if($ticket->requester_id !== Auth::id(), 403);
@@ -248,7 +218,6 @@ class TicketController extends Controller
             ]
         );
 
-        // Tự động đóng ticket sau khi đánh giá
         $ticket->update([
             'status'    => 'CLOSED',
             'closed_at' => now(),

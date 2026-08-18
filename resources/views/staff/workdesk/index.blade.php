@@ -171,7 +171,6 @@
                 <table class="table table-hover align-middle mb-0 table-workdesk" style="font-size:0.875rem;">
                     <thead class="table-light text-uppercase text-secondary" style="font-size:0.72rem;">
                         <tr>
-                            <th>Mã</th>
                             <th>Tiêu đề sự cố</th>
                             <th>Người báo</th>
                             <th>Danh mục</th>
@@ -202,7 +201,6 @@
                             }
                         @endphp
                         <tr>
-                            <td class="font-monospace text-muted fw-bold">#{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}</td>
                             <td style="max-width:240px;">
                                 <a href="{{ route('staff.tickets.show', $t->id) }}" class="fw-bold text-dark text-decoration-none">
                                     {{ Str::limit($t->title, 45) }}
@@ -271,7 +269,6 @@
                 <table class="table table-hover align-middle mb-0 table-workdesk" style="font-size:0.875rem;">
                     <thead class="table-light text-uppercase text-secondary" style="font-size:0.72rem;">
                         <tr>
-                            <th>Mã</th>
                             <th>Tiêu đề sự cố</th>
                             <th>Người báo</th>
                             <th>Danh mục</th>
@@ -287,7 +284,6 @@
                             $isOverdue = $t->sla_deadline && now()->greaterThan($t->sla_deadline);
                         @endphp
                         <tr class="{{ $isOverdue ? 'table-danger' : '' }}">
-                            <td class="font-monospace text-muted fw-bold">#{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}</td>
                             <td style="max-width:240px;">
                                 <a href="{{ route('staff.tickets.show', $t->id) }}" class="fw-bold text-dark text-decoration-none">
                                     {{ Str::limit($t->title, 45) }}

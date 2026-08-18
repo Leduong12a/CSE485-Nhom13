@@ -24,7 +24,7 @@
         </div>
 
         {{-- Cụm Nút Đổi Trạng Thái 1-Click --}}
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
 
             {{-- Nếu chưa có KTV phụ trách -> Nút Tự nhận việc --}}
             @if (! $ticket->current_assignee_id)
@@ -69,7 +69,58 @@
                 </form>
             @endif
 
+            {{-- Nút Trả về hàng chờ: chỉ hiện khi KTV đang phụ trách & ticket chưa hoàn thành --}}
+            @if ($ticket->current_assignee_id === Auth::id() && ! in_array($ticket->status, ['RESOLVED', 'CLOSED']))
+                <button type="button"
+                        class="btn btn-outline-light fw-bold rounded-3 px-3"
+                        style="font-size:0.875rem; border-color:rgba(255,255,255,0.5);"
+                        data-bs-toggle="modal" data-bs-target="#releaseModal">
+                    <i class="bi bi-box-arrow-left me-1"></i> Yêu cầu phân công lại
+                </button>
+            @endif
+
         </div>
 
     </div>
 </div>
+
+{{-- Modal Trả về hàng chờ --}}
+@if ($ticket->current_assignee_id === Auth::id() && ! in_array($ticket->status, ['RESOLVED', 'CLOSED']))
+<div class="modal fade" id="releaseModal" tabindex="-1" aria-labelledby="releaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="releaseModalLabel">
+                    <i class="bi bi-box-arrow-left text-warning me-2"></i>Yêu cầu phân công lại
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ route('staff.tickets.release', $ticket->id) }}">
+                @csrf
+                <div class="modal-body pt-2">
+                    <p class="text-muted" style="font-size:0.875rem;">
+                        Ticket sẽ được trả về chưa phân công và <strong>Quản lý sẽ phân công lại</strong> cho KTV khác phù hợp hơn.
+                        Vui lòng nhập lý do để Quản lý nắm được tình huống.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:0.875rem;">
+                            Lý do trả lại <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="reason" rows="3" required minlength="10" maxlength="500"
+                            class="form-control rounded-3"
+                            placeholder="VD: Tôi đang bận xử lý sự cố khẩn cấp khác, hoặc ticket này không đúng chuyên môn của tôi..."
+                            style="font-size:0.875rem; resize:none;"></textarea>
+                        <div class="form-text">Tối thiểu 10 ký tự.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning fw-bold rounded-3 text-dark">
+                        <i class="bi bi-box-arrow-left me-1"></i> Xác nhận yêu cầu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif

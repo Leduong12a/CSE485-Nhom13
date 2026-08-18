@@ -10,15 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    /**
-     * Xem Hồ sơ & Ca trực của Kỹ thuật viên
-     */
     public function index()
     {
         $user = Auth::user();
         $user->load(['staffProfile.specialties', 'department']);
 
-        // Đảm bảo staffProfile tồn tại
         $profile = $user->staffProfile;
         if (! $profile) {
             $profile = StaffProfile::create([
@@ -28,7 +24,6 @@ class ProfileController extends Controller
             ]);
         }
 
-        // Thống kê KTV
         $totalAssigned = Ticket::where('current_assignee_id', $user->id)->count();
         $totalResolved = Ticket::where('current_assignee_id', $user->id)->whereIn('status', ['RESOLVED', 'CLOSED'])->count();
         $inProgress    = Ticket::where('current_assignee_id', $user->id)->where('status', 'IN_PROGRESS')->count();
@@ -42,9 +37,6 @@ class ProfileController extends Controller
         ));
     }
 
-    /**
-     * Cập nhật SĐT trực ca & Ca trực
-     */
     public function update(Request $request)
     {
         $user = Auth::user();

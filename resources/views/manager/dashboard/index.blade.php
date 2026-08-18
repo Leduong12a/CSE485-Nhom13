@@ -177,7 +177,13 @@
                 <i class="bi bi-star-fill"></i>
             </div>
             <div>
-                <div class="kpi-value text-warning">{{ $avgRating }} <span style="font-size:1rem;" class="text-muted fw-normal">/ 5.0</span></div>
+                <div class="kpi-value text-warning">
+                    @if ($avgRating !== null)
+                        {{ $avgRating }} <span style="font-size:1rem;" class="text-muted fw-normal">/ 5.0</span>
+                    @else
+                        <span style="font-size:1.1rem;" class="text-muted fw-normal">Chưa có đánh giá</span>
+                    @endif
+                </div>
                 <div class="kpi-label">Điểm hài lòng trung bình</div>
             </div>
         </div>
